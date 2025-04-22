@@ -1,0 +1,497 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fi" lang="fi">
+<head>
+<title>Animaatiotiedostojen pakkaaja - Tekninen suunnitelma - Artturi Tilanterä
+</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="css/tyyli.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+
+<h1>Paletti- ja muutostiivistävä animaatiotiedostojen pakkaaja</h1>
+<h4>Projektityön tekninen suunnitelma, T-106.1240 Ohjelmoinnin jatkokurssi T1</h4>
+<p>Artturi Tilanterä 12.10.2008</p>
+
+<h2><a name="kohta1">1 Ohjelman rakennesuunnitelma</a></h2>
+
+<h3><a name="kohta1.1">1.1 Luokat</a></h3>
+
+<h4><a name="kohta1.1.1">1.1.1 Luokkakaavio</a></h4>
+
+<p><img src="kuvat/luokat.png" alt="Luokkakaavio. Anip käyttää muita luokkia,
+kuvadataa välitetään Bitmap-olioilla" /></p>
+
+<h5>Merkintöjen selitykset</h5>
+
+<p><img src="kuvat/luokkamerkinnat.png" alt="Selitys luokkakaavion
+merkinnöistä." /></p>
+
+<h4><a name="kohta1.1.2">1.1.2 Anip</a></h4>
+
+<p>Pääluokka, joka käyttää muita luokkia.</p>
+
+<p><code>main()</code>
+- Käynnistysmetodi. Käsittelee komentoriviparametrit, tai delegoi niiden
+käsittelemisen jollekin yksityiselle metodille, ja päättää jatkotoimista. Jos
+parametrisyöte oli kelvollinen, kutsuu jotain seuraavasta kolmesta
+metodista.</p>
+
+<p><code>private createAnimation()</code>
+- Luo uuden animaatiotiedoston BMP-kuvista kutsumalla
+<code>BMPFile</code>- ja <code>APEncoder</code>&nbsp;-luokkien metodeita.</p>
+
+<p><code>private extractAnimation()</code> - Luo BMP-kuvatiedostosarjan
+animaatiotiedoston perusteella kutsumalla <code>APDecoder</code>- ja
+<code>BMPFile</code>&nbsp;-luokkien metodeita.</p>
+
+<p><code>private playAnimation()</code> - Käynnistää graafisen käyttöliittymän
+animaation toistoa varten luomalla <code>Player</code>&nbsp;-olion.</p>
+
+<h4><a name="kohta1.1.3">1.1.3 Bitmap</a></h4>
+
+<p>Säiliöolio, jota käytetään kuvadatan siirtämiseen luokkien välillä.</p>
+
+<h4>1.1.4 BMPFile</h4>
+
+<p>BMP-tiedoston käsittely.</p>
+
+<p><code>read()</code> - Lukee BMP-tiedoston levyltä ja tallentaa
+kuvasisällön <code>Bitmap</code> -olioon.</p>
+
+<p><code>write()</code> - Tallentaa <code>Bitmap</code> -olion kuvasisällön
+BMP-tiedostoon levylle.</p>
+
+<h4>1.1.5 APEncoder</h4>
+
+<p>Animaation pakkaaja ja levylle tallentaja.</p>
+
+<p><code>setFile()</code> - Aloittaa ja lopettaa kirjoittamisen tiedostoon.</p>
+
+<p><code>setOptions()</code> - Asettaa animaation kuva-, toisto- ja
+mahdolliset pakkausasetukset.</p>
+
+<p><code>putImage()</code> - Antaa pakkaajalle uuden kuvan pakattavaksi ja
+liitettäväksi levylle kirjoitettavaan animaatiotiedostoon.</p>
+
+<p><code>private findRegionChanges()</code> - Vertaa uutta pakattavaksi
+saatua kuvaa edelliseen ja merkitsee muistiin ne 8x8 pikselin alueet, jotka
+ovat muuttuneet.</p>
+
+<p><code>private createPalette()</code> - Luo 256 värin paletin 24-bittisestä
+kuvasta muuttuneiden alueiden väridatan pohjalta.</p>
+
+<p><code>private compressPalette()</code> - Pakkaa 256 värin paletin datan
+levylle kirjoitettavaksi. Pyrkii käyttämään uudestaan edellisen paletin
+värejä.</p>
+
+<p><code>private compressBlock()</code> - Pakkaa 8x8 pikselin lohkon
+muun muassa sovittaen sen 256 värin paletille.</p>
+
+<h4>1.1.6 APDecoder</h4>
+
+<p>Animaatiotiedoston lukija ja purkaja.</p>
+
+<p><code>setFile()</code> - Aloittaa ja lopettaa lukemisen tiedostosta.</p>
+
+<p><code>getOptions()</code> - Kertoo animaation kuva-, toisto- ja
+mahdolliset pakkausasetukset.</p>
+
+<p><code>getImage()</code> - Antaa järjestyksessä seuraavan puretun kuvan.</p>
+
+<p><code>changedRegions()</code> - Antaa tiedot siitä, mitkä 8x8 pikselin
+lohkot ovat muuttuneet.</p>
+
+<p><code>setPosition()</code> - Siirtyy animaation purkamisessa
+järjestysnumeroltaan haluttuun kuvaan.</p>
+
+<p><code>private decompressPalette()</code> - Purkaa pakatun 256 värin
+paletin.</p>
+
+<p><code>private decompressBlock()</code> - Purkaa 8x8 pikselin lohkon.</p>
+
+<h4>1.1.7 PlayerWindow</h4>
+
+<p>Graafinen käyttöliittymäikkuna. Periytyy Javan Swing -kirjaston
+ikkunaluokasta JFrame.</p>
+
+<h4>1.1.8 VideoWindow</h4>
+
+<p>Alue, jossa toistettava videokuva näytetään. Periytyy Javan Swing
+-kirjaston luokasta JPanel.</p>
+
+<p><code>paintComponent()</code> - Piirtometodi.</p>
+
+<h4>1.1.9 JButton</h4>
+
+<p>Painike, josta saa käynnistettyä ja pysäytettyä animaation toistamisen.
+Javan Swing -kirjaston luokka.</p>
+
+<h4>1.1.10 JScrollBar</h4>
+
+<p>Liukusäädin, jolla voi hypätä haluttuun kohtaan animaation toistamisessa
+sekä siirtyä seuraavaan kuvaan tai edelliseen avainkuvaan.
+Javan Swing -kirjaston luokka.</p>
+
+<h4>1.1.11 JPanel</h4>
+
+<p>Näkymätön alue, joka asettaa PlayButton- ja PositionControl -luokkien
+ilmentymät vaakasuunnassa vierekkäin. Javan Swing -kirjaston luokka.</p>
+
+<h4>1.1.12 ButtonListener</h4>
+
+<p>Tapahtumankuuntelija, joka jatkokäsittelee PlayButtonin ja
+PositionControlin muutoksia käyttäjän tehdessä niille jotain.
+Toteuttaa Javan AWT -kirjaston rajapinnan ActionListener.</p>
+
+<h3>1.2 Vaihtoehtoisia toteutuksia ja nykyisen perustelu</h3>
+
+<p>BMP-tiedoston lukurutiinit ovat omassa luokassaan, jotta niitä voidaan
+tarvittaessa käyttää uudelleen toisissa ohjelmissa. BMP-tiedoston luku- ja
+kirjoitusrutiinit ovat hyvin yksinkertaisia, joten on luontevaa säilöä
+molemmat samaan luokkaan. <a href="#viite1">[1]</a></p>
+
+<p>Graafinen käyttöliittymä on omissa luokassaan jo Javan AWT- ja Swing-
+käyttöliittymäkirjastojen käyttötavan pakottamana.
+<a href="#viite2">[2]</a>, <a href="#viite3">[3]</a> Tässä ratkaisussa on
+se etu, että graafista käyttöliittymää voidaan muuttaa helposti tai
+se voidaan jättää pois tai korvata toisella.</p>
+
+<p>Bitmap on kätevä säiliöolio. Sen avulla voi välittää
+pikselidatan mukana kuvan leveyden ja korkeuden yhtenä ainoana
+metodikutsun parametrina, tai jopa palauttaa kaikki nämä tiedot metodin
+paluuarvona.</p>
+
+<p>Tietysti on kapselointi-idean vastaista, että varsinaisen kuvadatan
+sisältävät kentät ovat julkisia. <a href="#viite4">[4]</a>
+Vaihtoehtona olisi tehdä metodit, jotka
+kirjoittavat ja lukevat kuvadataa pikseli tai alue kerrallaan, mutta
+juuri tässä ohjelmassa tiuhaan toistuvat metodikutsut ja niihin liittyvät
+tarkistukset parametrien oikeista arvoista söisivät suorituskykyä.
+Sittenkin, jos esimerkiksi animaatiota purettaessa dekooderi lisäisi
+RGBBitmap-olioon tietoa aina yksi 8x8 pikselin lohkoista koostuva
+vaakarivi kerrallaan, niin data jouduttaisiin kuitenkin kopioimaan, mikä
+tuntuu tarpeettomalta verrattuna siihen, että dekooderi kirjoittaa datan
+kerran tähän säiliöolioon ja siitä eteenpäin se luetaan kerran kirjoitettaessa
+BMP-tiedostoon tai ruudulle piirrettäväksi.</p>
+
+<p>APEncoder ja APDecoder olisivat voineet olla molemmat samassa luokassa.
+Toisin kuin BMP-rutiinit, ne ovat monimutkaisia. Jos ohjelmasta halutaan
+tehdä versio, joka on vain videota toistava Java-appletti web-sivulla, niin
+animaation pakkausrutiini vie vain turhaan tiedonsiirtoaikaa ja appletti
+käynnistyy hitaammin, kun sen tavukoodi pitää kääntää käytettäväksi.
+Sen sijaan animaatiotiedoston luku- ja kirjoitusrutiinien on luontevaa olla
+samoissa luokissa kuin purku- ja pakkausrutiinien, koska ne lähinnä
+toimivat välittäjänä massamuistille ja edellämainituille
+datankäsittelyrutiineille.</p>
+
+<h2>2 Käyttötapauskuvaus</h2>
+
+<p>Ohjelma käynnistetään käyttöjärjestelmän komentoriviltä kaikissa
+käyttötapauksissa. Komentorivikomennot onkin jo kerrottu
+<a href="yleissuunnitelma.html#kayttoliittyman_luonnos">käyttöliittymän
+luonnoksessa</a> yleissuunnitelmassa.</p>
+
+<h3>2.1 Esimerkki: animaatiotiedoston tekeminen</h3>
+
+<p>Kun käyttäjä on antanut ohjelmalle käynnistysparametreina pakkauskomennon,
+<b>Anip</b> -luokka käynnistää yksityismetodinsa
+<b>createAnimation()</b> suorittamaan työn. Tämä metodi luo yhden
+<b>APEncoder</b> -olion antaen sille aluksi animaatiotiedoston
+nimen ja pakkausasetukset <b>setFile()</b>- ja
+<b>setOptions()</b>-metodeita kutsumalla. APEncoderin setFile()
+avaa tiedoston kirjoittamista varten ja kirjoittaa tiedoston alun, jossa
+on tiedostotyypin tunniste.</p>
+
+<p>createAnimation() luo vielä <b>Bitmap</b> -olion. Sitten se
+aloittaa silmukan, jossa se luetuttaa BMP-tiedoston <b>BMPFile</b>
+-luokan <b>read()</b> -metodilla, joka vie kuvan tiedot 
+createAnimation():in Bitmap -olioon. Sitten createAnimation() antaa
+Bitmap-olion (viittauksen) parametrina APEncoderin <b>putImage()</b>
+-metodille.</p>
+
+<p>APEncoderin putImage() pakkaa kuvan saman tien ja kirjoittaa sen
+levylle. Pakkaamisen eri vaiheet se delegoi luokan yksityisille
+<b>findRegionChanges()</b>-, <b>createPalette()</b>-,
+<b>compressPalette()</b>- ja <b>compressBlock()</b> -metodeille.</p>
+
+
+<h2>3 Algoritmit</h2>
+
+<h3>3.1 Paletin muodostaminen kuvasta</h3>
+
+<p>Koko kuvaa koskevan 256-värisen paletin uusien värien määrä lasketaan
+kaavalla</p>
+<p class="kaava">minimi + (256 - minimi) * muuttuvat / kaikki,</p>
+<p>jossa</p>
+<dl>
+<dd><i>minimi</i> on paletin uusien värien vähimmäismäärä, arvo väliltä 0..256;</dd>
+<dd><i>muuttuvat</i> on muuttuvien lohkojen määrä tässä kuvassa, ja</dd>
+<dd><i>kaikki</i> on lohkojen kokonaismäärä kuvassa.</dd>
+</dl>
+<p>Siis mitä suurempi alue kuvassa muuttuu, sitä suurempi määrä värejä
+varataan muutokselle. Loput värit ovat edellisen kuvan paletin värejä, joita
+pyritään käyttämään myös tässä kuvassa.</p>
+
+<p>Varsinaiseen kuvapaletin muodostamiseen käytetään yleisesti
+tunnettua octree quantization -menetelmää. <a href="#viite5">[5]</a>,
+<a href="#viite6">[6]</a>, <a href="#viite9">[9]</a>,
+<a href="#viite10">[10]</a></p>
+
+<p><b>Vaihtoehtoja:</b> Median cut -tekniikka, joka on vielä paremmin
+tunnettu kuin octree. Octree on valittu sillä perusteella, että sillä
+oletetaan saavan paremman lopputuloksen, kun se toteutetaan viemällä
+ensin kaikki värit puuhun, ja vasta sitten sulauttamalla värejä toisiinsa.
+Silloin octree on hitaampi ja vie enemmän muistia, mutta se ei ole
+oleellista pakkaamisessa.</p>
+
+<p>Toisaalta on tietysti kyseenalaista, katoaako octreen laatuero
+median cutiin siinä vaiheessa, kun värejä rajoitetaan uudestaan
+8x8 lohkojen sisällä. Tässä vaiheessa en ole täysin varma, kumpi
+algoritmi on parempi, mutta oletan mahdollisimman hyvään laatuun
+pyrkivän octreen aiheuttavan väriliu'uissa hieman hienostuneemman
+näköistä raidoittumista, jota syntyy pakosta värien määrää rajoittaessa.
+Saatan päätyä kokeilemaan molempia algoritmeja käytännössä.</p>
+
+<h3>3.2 Kuvan sovittaminen paletille</h3>
+
+<p>Jokaisella 8x8 pikselin lohkolle sovitetaan kuvalle muodostettu 256-värinen
+paletti seuraavasti.</p>
+
+<p>Kun pikselin väri on (<i>r</i>, <i>g</i>, <i>b</i>), joissa <i>r</i>:n,
+<i>g</i>:n ja <i>b</i>:n arvot ovat välillä 0..255, ja paletin väriarvot
+ovat <i>pr[i]</i>, <i>pg[i]</i>, <i>pb[i]</i> samaten arvoiltaan välillä
+0..255 kuten myös indeksi <i>i</i>, niin
+sopivin paletin väri pikselille on se, jolla pikselin väriarvon etäisyys
+paletin väristä rgb-väriavaruudessa on pienin. Tämä on se <i>i</i>:n arvo,
+jolla</p>
+
+<div class="sisennys">
+<p class="kaava">sqrt( (pr[i] - r)^2 + (pg[i] - g)^2 + (pb[i] - b)^2 )</p>
+</div>
+
+<p>on pienin. (sqrt on neliöjuuri, ^2 korotus toiseen potenssiin.)
+<a href="#viite5">[5]</a></p>
+
+<h3>3.3 Animaation pakkaaminen</h3>
+
+<p>Animaatio pakataan kuva kerrallaan. Yksi kuva pakataan seuraavasti.</p>
+
+<ol>
+<li>Jaa kuva 8x8 pikselin lohkoihin. Jos mahdollista, vertaa jokaista
+lohkoa edellisen (pakkaamattoman) lähdekuvan lohkoon vastaavassa paikassa,
+ja merkitse jatkokäsiteltäväksi vain ne lohkot, jotka ovat muuttuneet
+nykyisessä kuvassa edelliseen verrattuna.</li>
+
+<li>Muodosta kaikille lohkoille yhteinen 256 värin paletti. Käytä hyväksi
+edellisen kuvan palettia jos mahdollista. Sovita paletti lohkoille.
+Tallenna paletti, tai jos mahdollista, tallenna vain edellisen kuvan
+paletin suhteen muuttuneet värit.</li>
+
+<li>Muodosta jokaiselle lohkolle oma, enintään 16 värin paletti, joka
+koostuu lohkossa eniten käytetyistä väriarvoista. Sovita paletti lohkolle.
+</li>
+
+<li>Pakkaa jokainen lohko RLE-koodauksella niiltä osin, kun se on
+kannattavaa. <a href="#viite7">[7]</a></li>
+
+<li>Tallenna lohkot lineaarisesti rivi kerrallaan. Käytä RLE-koodausta
+ilmaisemaan, miten pitkä sarja lohkoja tulee seuraavaksi, ja ovatko ne
+muuttuvia, vai muuttumattomia eli pakattaessa ja purettaessa ohitettavia.
+</li>
+
+</ol>
+
+<p>Käytännössä kaksi viimeistä vaihetta tehdään limittäin niin, että
+ensin lohko pakataan RLE-koodauksella ja sitten se kirjoitetaan levylle.</p>
+
+<p><b>Algoritmin toimintaideat:</b> Pakkausalgoritmin pääidea
+on siis tiivistää väri-informaatiota häviöllisesti kuvaamalla värisävyt
+hyvin rajoitetun kokoiselle joukolle värisävyjä. Näin tarvitaan vähemmän
+bittejä pikseliä kohti väri-informaation esittämiseksi. Toinen pääidea
+on tallentaa kuvasta vain muuttuvat alueet.</p>
+
+<p>Kuvan jakamisen pieniin osa-alueisiin, joissa jokaisessa
+väri-informaatiota rajoitetaan edelleen paikallisesti, oletetaan muodostuvan
+kannattavaksi, kun havaitaan, että mitä rajoitetumpi määrä värejä
+kuvan osa-alueessa on, sen paremmin se pakkautuu yksinkertaisella
+RLE-koodauksella.</p>
+
+<p><b>Vaihtoehtoinen osatoteutus:</b>Toinen lähestymistapa pakata
+lopullisesti rajoitettu väri-informaatio
+olisi käyttää RLE:tä monimutkaisempaa pakkausta, ja kenties kaikille
+lohkoille yhteisesti. Yksi tällainen monimutkaisempi pakkausmenetelmä
+olisi Huffman-koodaus, jota muun muassa JPEG-kuvatiedostomuoto käyttää
+jälkipakkaukseen, tosin RLE:n kanssa yhdessä. <a href="#viite8">[8]</a>
+Nykyisessä toteutuksessa olen kuitenkin lähtenyt ajatuksesta, että
+RLE-pakkaus olisi laskennallisesti hyvin helppo purkaa ajatellen
+animaation purkamista tai reaaliaikaista toistamista, jossa nopeus 
+on tärkeää. Lisäksi olen ajatellut, että kun yhdessä 8x8 pikselin
+lohkossa on 16 värillä keskimäärin yksi väri neljää pikseliä kohti,
+niin väri-informaatiota tuskin katoaa häiritsevän paljon.</p>
+
+<h3>3.4 Animaation purkaminen</h3>
+
+<p>Animaation purkamisessa on periaatteessa samat vaiheet kuin pakkaamisessa,
+mutta käänteisessä järjestyksessä, ja paletin muodostamisia ja sovittamisia
+ei ole.</p>
+
+<h2>4 Tietorakenteet</h2>
+
+<p>Koska ohjelmassa on suuria pikseli- ja värijoukkoja, toisin sanoen
+suuria määriä hyvin yksinkertaisia data-alkioita, niiden varastointi ja
+käsittely on luontevinta ja suorituskyvyn kannalta optimaalisinta tehdä
+taulukoissa. Taulukkorakennetta myös tukee se, että pikseli- ja värijoukkojen
+koko tai ainakin enimmäiskoko tiedetään ennalta, joten dynaamista
+muistinkäsittelyä ei juurikaan tarvita.</p>
+
+<h3>4.1 Octree</h3>
+
+<p>Octree on siis yleisesti tunnettu puurakenne, jota käytetään
+paletin muodostamisessa. Puun jokaisella solmulla on kahdeksan lehteä,
+jotka vastaavat kolmen bitin kaikkia erilaisia yhdistelmiä: yksi bitti
+kutakin värikomponenttia (R, G, B) kohti. Puuhun siis tallennetaan
+kuvassa esiintyvistä RGB-värisävyistä ja siitä, kuinka monta pikseliä
+on kutakin värisävyä. Värit haarautuvat RGB-bittiyhdistelmä kerrallaan
+juurisolmussa olevista R:n, G:n ja B: merkitsevimmistä biteistä
+lähtien alaspäin järjestyksessä vähemmän merkitseviin.
+<a href="#viite6">[6]</a></p>
+
+<h2>5 Aikataulu</h2>
+
+<p>Aion toteuttaa ja testata ohjelman eri osat jotakuinkin
+siinä järjestyksessä, kun olen maininnut ne jo
+<a href="yleissuunnitelma.html#jarjestelmatestaus">yleissuunnitelmassa</a>.
+</p>
+
+<table>
+<tr>
+<td>Viikko</td>
+<td>Osa-alueet</td>
+<td>Tuntia yht.</td>
+</tr>
+
+<tr>
+<td>42</td>
+<td>BMP-tiedostojen lukeminen ja kirjoittaminen = 3 h.<br />
+Grafiikan piirtäminen ruudulle = 1 h. <br />256 värin paletin muodostaminen
+BMP-kuvan pohjalta = 11 h.</td>
+<td>15</td>
+</tr>
+
+<tr>
+<td>43</td>
+<td>256 värin paletin muodostaminen BMP-kuvan pohjalta = 9 h.<br />
+Lohkokohtaisten 16 värin palettien muodostaminen = 2 h.<br />
+Muuttuvien alueiden tunnistaminen = 3 h.</td>
+<td>14</td>
+</tr>
+
+<tr>
+<td>44</td>
+<td>256 värin kuvapaletin pakkaaminen ja purkaminen = 4 h.<br />
+16 värin lohkopaletin pakkaaminen ja purkaminen = 3 h.<br />
+Alueiden muuttuvuustiedon pakkaaminen ja purkaminen = 1 h.<br />
+Animaatiotiedoston kirjoittaminen = 7 h.</td>
+<td>15</td>
+</tr>
+
+<tr>
+<td>45</td>
+<td>Animaatiotiedoston lukeminen = 8 h.<br />
+Animaatiotiedoston toistaminen ruudulla (ilman käyttäjän mahdollisuutta
+vaikuttaa toistoon) = 7 h.</td>
+<td>15</td>
+</tr>
+
+<tr>
+<td>46</td>
+<td>Animaatiotiedoston kirjoittaminen kuvatiedostoiksi = 4 h.<br />
+Graafinen käyttöliittymä = 11 h.</td>
+<td>15</td>
+</tr>
+
+<tr>
+<td>47</td>
+<td>(Varattu aikataulun muutoksille, viimeistelylle ja dokumentaatiolle)</td>
+<td>15</td>
+</tr>
+
+<tr>
+<td>48</td>
+<td>(Varattu aikataulun muutoksille, viimeistelylle ja dokumentaatiolle)</td>
+<td>15</td>
+</tr>
+
+<tr>
+<td />
+<td />
+<td>Ainakin 100</td>
+</tr>
+</table>
+
+<p>On mahdollista, että arvioitu kuluva kokonaisaika puolitoista- tai
+kaksinkertaistuu ohjelmoinnissa sattuneiden virheiden eliminoimisen tai
+vaihtelevan työtehon takia.</p>
+
+<h2>6 Yksikkötestaussuunnitelma</h2>
+
+<p>Tämä kohta näyttää olevan identtinen
+<a href="yleissuunnitelma.html#jarjestelmatestaus">yleissuunnitelmassa</a>
+olevan järjestelmätestaussuunnitelman kanssa. (Huomio: kyseisen
+kohdan loppuun tuli <a href="yleissuunnitelma.html#lisays1">lisäys</a>
+jälkikäteen.)</p>
+
+<h2>7 Viitteet</h2>
+
+<p><a name="viite1">[1]</a>
+<a href="http://en.wikipedia.org/wiki/BMP_file_format">BMP file
+format</a>. Wikipedia. Viitattu 9.10.2008</p>
+
+<p><a name="viite2">[2]</a>
+<a href="http://java.sun.com/j2se/1.5.0/docs/api/">Java<sup>TM</sup>
+2 Platform Standard Edition 5.0 API Specification</a>. Sun Microsystems, Inc.
+ Viitattu 11.10.2008</p>
+
+<p><a name="viite3">[3]</a>
+<a href="https://noppa.tkk.fi/noppa/kurssi/t-106.1240/luennot">
+TKK:n kurssin T-106.1240 Ohjelmoinnin jatkokurssi T1 (Java) luentokalvot</a>.
+Otto Seppälä. Viitattu 11.10.2008.</p>
+
+<p><a name="viite4">[4]</a>
+<a href="https://noppa.tkk.fi/noppa/kurssi/t-106.1203/">
+Laatuseikkoja</a>. TKK:n kurssin "T-106.1200 Ohjelmoinnin perusteet L (Java)"
+luento. Juha Sorva. Viitattu 11.10.2008.</p>
+
+<p><a name="viite5">[5]</a>
+<a href="http://en.wikipedia.org/wiki/Color_quantization">Color
+quantization</a>. Wikipedia. Viitattu 11.10.2008</p>
+
+<p><a name="viite6">[6]</a>
+<a href="http://en.wikipedia.org/wiki/Octree">Octree</a>. Wikipedia.
+Viitattu 11.10.2008</p>
+
+<p><a name="viite7">[7]</a>
+<a href="http://en.wikipedia.org/wiki/Run_length_encoding">Run-length
+encoding</a>. Wikipedia. Viitattu 12.10.2008</p>
+
+<p><a name="viite8">[8]</a>
+<a href="http://en.wikipedia.org/wiki/Huffman_coding">Huffman coding</a>.
+Wikipedia. Viitattu 12.10.2008</p>
+
+<p><a name="viite9">[9]</a>
+<a href="http://algolist.manual.ru/graphics/quant/qoverview.php">
+Color Quantization Overview</a>. Algolist.manual.ru. Viitattu 12.10.2008</p>
+
+<p><a name="viite10">[10]</a>
+<a href="http://www.cubic.org/docs/octree.htm">
+Octree Color Quantization</a>. Nils Pipenbrinck 1998. Viitattu 12.10.2008</p>
+
+ <hr />
+<p>12.10.2008 <a href="mailto:atilante nospam+at cc dot hut dot fi">Artturi
+Tilanterä</a></p>
+
+</body>
+</html>
+

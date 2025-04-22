@@ -1,0 +1,2201 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fi" lang="fi">
+<head>
+<title>Animaatiotiedostojen pakkaaja - Projektityön dokumentti
+- Artturi Tilanterä
+</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="css/tyyli.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+
+<h1>Paletti- ja muutostiivistävä animaatiotiedostojen pakkaaja</h1>
+
+<h4>Projektityön dokumentti</h4>
+
+<h4>T-106.1240 Ohjelmoinnin jatkokurssi T1</h4>
+
+<h2><a name="sisalto">Sisältö</a></h2>
+
+<p>Dokumentin pääkohtien numerointi ja sisältö on tehty 
+vastaamaan
+<a href="http://www.cs.hut.fi/Opinnot/T-106.1240/2008_external/projekti/dokumentti.shtml">dokumenttiohjetta kurssin kotisivulla</a>.</p>
+
+<p>
+1 <a href="#kohta1">Henkilötiedot</a><br />
+2 <a href="#kohta2">Yleiskuvaus</a><br />
+3 <a href="#kohta3">Käyttöohje</a><br />
+4 <a href="#kohta4">Ohjelman rakenne</a><br />
+5 <a href="#kohta5">Algoritmit</a><br />
+6 <a href="#kohta6">Tietorakenteet</a><br />
+7 <a href="#kohta7">Tiedostot</a><br />
+8 <a href="#kohta8">Testaus</a><br />
+9 <a href="#kohta9">Ohjelman tunnetut puutteet ja viat</a><br />
+10 <a href="#kohta10">Kolme parasta ja kolme heikointa kohtaa</a><br />
+11 <a href="#kohta11">Poikkeamat suunnitelmasta</a><br />
+12 <a href="#kohta12">Toteutunut työjärjestys ja aikataulu</a><br />
+13 <a href="#kohta13">Arvio lopputuloksesta</a><br />
+14 <a href="#kohta14">Viitteet</a><br />
+15 <a href="#kohta15">Liitteet</a>
+</p>
+
+<h2><a name="kohta1">1 Henkilötiedot</a></h2>
+
+<p>Artturi Tilanterä</p>
+<p>Tik IV</p>
+<p>30.11.2008</p>
+
+<h2><a name="kohta2">2 Yleiskuvaus</a></h2>
+
+<p>Projektityönä on suunniteltu ja toteutettu videonpakkausohjelma
+Java-ohjelmointikielellä. Työn tehtävänanto
+<a href="http://www.cs.hut.fi/Opinnot/T-106.1240/2008_external/projekti/aiheet2008/280ed.html">
+kurssin www-sivuja</a> lainaten on seuraava:</p>
+
+<div class="lainaus">
+
+<h3>Animaatiotiedostojen pakkaaja</h3>
+
+<p>&rdquo;Tee kuva-animaatiotiedostojen pakkaus- ja
+purkuohjelma. Voit joko suunnitella oman animaatioformaatin, tai käyttää
+jotain valmista.</p>
+
+<p>Ohjelman työstää valituista raakakuvista animaatiotiedoston,
+jonka tallentaminen levylle on tehokkaampaa (vie vähemmän tilaa) kuin jokaisen
+raakakuvan tallentaminen erikseen. Vastaavasti ohjelma osaa myös purkaa
+animaatiotiedosto takaisin raakakuviksi.</p>
+
+<p>Raakakuvalla tarkoitetaan bittikarttaa, jossa jokaisen
+pikselin väriarvo on erikseen ilmoitettu.</p>
+
+<p>Algoritmien ei tarvitse olla täysin symmetrisiä eli puretut
+raakakuvat voivat erota alkuperäisistä (kuten esim. MPEG)!</p>
+
+<p>Ohjelman EI tarvitse osata näyttää ruudulle animaatioita.</p>
+
+<p>Kiinnitä ohjelmassasi huomiota erityisesti purkunopeuteen
+sekä tilansäästöön (pakkausnopeudella ei ole niin suurta merkitystä, koska se
+pitää tehdä vain yhden kerran). Pohdi dokumentaatiossa formaatin soveltuvuutta
+eri tarkoituksiin symmetrisyydestä, tilansäästöstä ym. seikoista
+johtuen.&nbsp;&ndash;&nbsp;&ndash;&nbsp;&ndash;</p>
+
+<h3>Vaatimukset</h3>
+
+<h4>Keskivaikea-vaativa</h4>
+
+<ul>
+<li>ohjelmassa on kaksi moodia: pakkaus- ja purkumoodi</li>
+
+<li>pakkausmoodissa ohjelma lukee käyttäjän määrittelemät raakakuvat
+tiedostoista, tekee niistä animaation ja tallettaa sen valitun nimiseen
+animaatiotiedostoon</li>
+
+<li>purkumoodissa toiminta etenee päinvastaiseen suuntaan: ohjelma lukee
+käyttäjän valitseman animaatiotiedoston, purkaa animaation ja tallettaa kuvat
+valitun nimisiin tiedostoihin (esim. kuva0001.bmp, kuva0002.bmp,...)</li>
+
+<li>ohjelman EI tarvitse osata näyttää ruudulle animaatioita, mutta siitä saa
+plussaa ja saattaapa se helpottaa ohjelman debug-operaatiotakin</li>
+
+<li>arvosteluun vaikuttaa keskeisesti pakkausalgoritmin laatu: simppelisti
+ja vähän pakkaavalla algoritmilla varustetun työn katsotaan olevan keskivaikea,
+paljon tiivistävällä vaativa&rdquo;</li>
+</ul>
+</div>
+
+<p>Olen mielestäni toteuttanut työn vaikeusasteella <b>vaativa</b>
+sillä perusteella, että sen toiminnallisuus on sama kuin minkä kuvasin
+työn yleissuunnitelmassa: Pakkausalgoritmi on häviöllinen ja melko tehokas;
+se perustuu ensisijaisesti väri-informaation rajoittamiseen yksittäisissä
+kuvissa ja niiden osa-alueissa sekä vain muuttuvien osa-alueiden
+tallentamiseen kuvan vaihtuessa seuraavaan. Ohjelma pystyy myös näyttämään
+pakatun videon ruudulla.</p>
+
+<h3>Muutokset suunnitelmaan verrattuna</h3>
+
+<p>Ohjelman näyttäessä videota ruudulle ei ole toteutettu graafista
+käyttöliittymää, jolla voisi vaikuttaa videon toistamiseen. Videota
+toistettaessa voi vain lopettaa ohjelman suorittamisen sulkemalla
+graafisen ohjelmaikkunan.</p>
+
+<h2><a name="kohta3">3 Käyttöohje</a></h2>
+
+<p>Ohjelmaa käytetään käyttöjärjestelmän komentoriviltä antamalla
+parametreja käynnistyskomennon yhteydessä. Yleinen muoto ohjelman
+käyttökomennolle komentoriviltä on seuraava:</p>
+
+<p><code>java anip/Anip [parametrit]</code></p>
+
+<p>Edellisessä tapauksessa ollaan hakemistossa, joka sisältää hakemiston
+<code>anip</code>, joka sisältää ohjelman tavukoodimuodossa nimeltään
+<code>.class</code> -päätteisinä tiedostoina. (Tässä siis komento
+Java-virtuaalikoneen käynnistämiseksi on "<code>java</code>". Esimerkki
+toimii ainakin Sun Microsystemsin Javan versiolla 6.)</p>
+
+<p>Ohjelmalla voi pakata sarjan kuvatiedostoja yhdeksi videotiedostoksi,
+purkaa videotiedoston sisällön takaisin sarjaksi kuvatiedostoja, ja
+näyttää jo luodun videotiedoston sisällön ruudulla.</p>
+
+<h3>3.1 Videon pakkaaminen</h3>
+
+<p>Sarja kuvatiedostoja pakataan yhdeksi videotiedostoksi komennolla</p>
+
+<p><code>java anip/Anip c video.ap F kuva0000.bmp</code></p>
+
+<ul>
+<li>Parametri <code>c</code> on pakkauskomento.</li>
+<li><code>video.ap</code> on luotavan videotiedoston nimi.</li>
+<li><code>F</code> on toistonopeus kuvina sekunnissa. Se voi olla kokonais-
+tai desimaaliluku. Desimaaliluvuissa käytetään desimaalipistettä
+(<code>.</code>) erottamaan desimaaliosa.</li>
+<li><code>kuva0000.bmp</code> on kuvatiedostojen nimikaava:
+ensin on alkuosa, jonka jälkeen seuraa sarja nollia, ja sitten on loppuosa.
+Sarja nollia viittaa tiedostojen järjestysnumeroihin, jotka kertovat
+kuvien toistojärjestyksen animaatiossa. Ensimmäisen kuvan järjestysnumero
+on nolla. Jokaiseen järjestysnumeroon lisätään tarvittaessa etunollia niin,
+että järjestysnumeron pituus on sama kuin nollien määrä nimikaavassa.</li>
+</ul>
+
+<p>Videotiedoston nimessä ja kuvatiedostojen nimikaavassa voi olla
+mukana hakemistopolku, joka on tällöin käyttöjärjestelmän yleisesti
+käyttämässä muodossa.</p>
+
+<p>Ohjelma aloittaa kuvatiedostojen lukemisen järjestysnumeroltaan
+ensimmäisestä ja etenee lisäten aina välillä kuvia pakattavaan
+videotiedostoon, kunnes seuraavaa kuvatiedostoa ei löydy, tai tulee virhe, tai
+kaikki nimikaavan mukaiset kuvatiedostot on käyty läpi.</p>
+
+<p>Ohjelman pakatessa videota se tulostaa aina seuraavaksi käsiteltävän
+kuvatiedoston nimen, josta työn etenemistä voi seurata.</p>
+
+<p>Ohjelma lukee ja kirjoittaa kuvatiedostoja, jotka ovat yleisesti
+tunnetussa 24-bittinen Microsoft BMP -muodossa.</p>
+
+<h3>3.2 Videon purkaminen kuvatiedostoiksi</h3>
+
+<p>Yhden videotiedoston sisältö voidaan purkaa alkuperäistä mukailevaksi
+sarjaksi kuvatiedostoja komennolla</p>
+
+<p><code>java anip/Anip x video.ap kuva0000.bmp [alku] [loppu]</code></p>
+
+<p>Parametrit ja numerointi ovat samat kuin videota pakattaessa,
+paitsi että:</p>
+
+<ul>
+<li><code>x</code> on purkukomento pakkauskomennon sijaan.</li>
+<li>Toistonopeutta ei ilmoiteta.</li>
+<li>Jos halutaan purkaa vain osa kuvista, parametrin <code>[alku]</code>
+kohdalle tulee ensimmäisen kuvan numero (kokonaisluku). Jos ensimmäisen
+kuvan numero on annettu, voidaan halutessa antaa myös viimeisen kuvan
+numero parametrin <code>[loppu]</code> kohdalle.</li>
+</ul>
+
+<p>Jos kuvasarjan viimeisten kuvien numerot ovat suuremmat kuin mitä
+tiedostojen nimikaavaan sopii, nimikaavaan lisätään tarvittava määrä
+etunollia.</p>
+
+<h3>3.3 Videon näyttäminen ruudulla</h3>
+
+<p>Ohjelma näyttää pakatun videotiedoston sisällön ruudulla ohjelmaikkunassa
+komennolla</p>
+
+<p><code>java anip/Anip video.ap</code></p>
+
+<p>jossa <code>video.ap</code> on toistettavan videotiedoston nimi.
+Kun videon toistamisessa päästään loppuun, aloitetaan uudestaan alusta.
+Toistamisen saa lopetettua sulkemalla ohjelmaikkunan.</p>
+
+<p>Jos komentoriviparametreja ei anneta tai ne ovat virheellisiä,
+ohjelma tulostaa ohjeet komentoriviparametrien antamisesta englanniksi.</p>
+
+<h2><a name="kohta4">4 Ohjelman rakenne</a></h2>
+
+<h3>4.1 Ohjelman luokkarakenne UML-kaaviona</h3>
+
+<p>Kaaviossa on ohjelman omat luokat, jokaisessa niiden oleellisimmat
+metodit, sekä kuvaus luokkien välisistä suhteista: kuinka monta
+luokan ilmentymää on mitäkin luokkaa kohtaan, mitkä luokat sisältävät
+viittauksia mihinkin luokkiin (nuolet), mikä on yhden luokan suhde
+toiseen luokkaan (esimerkiksi käyttää, kirjoittaa, lukee), ja
+mitkä luokat periytyvät toisista luokista (katkoviivanuolet).
+Kaavio on UML-mallinnuskieltä.</p>
+
+<p><img src="kuvat/rakenne-uml.png" alt="uml-kaavio luokkien suhteista" />
+</p>
+
+<h3>4.2 Kuvaus luokista ja niiden oleellisimmista metodeista</h3>
+
+<p>Luokkien metodit ovat julkisia ellei toisin mainita.</p>
+
+<h3>4.2.1 Ohjelman pääluokat</h3>
+
+<h4>Anip</h4>
+
+<p>Pääluokka, joka käyttää muita luokkia.</p>
+
+<p><code>main()</code>
+- Käynnistysmetodi. Delegoi komentoriviparametrien käsittelyn eräälle
+yksityiselle metodille, joka päättää jatkotoimista. Jos
+parametrisyöte oli kelvollinen, kutsutaan jotain seuraavasta kolmesta
+metodista.</p>
+
+<p><code>createAnimation()</code>
+- Luo uuden animaatiotiedoston BMP-kuvista kutsumalla
+<code>BMPFile</code>- ja <code>APEncoder</code>&nbsp;-luokkien metodeita.
+Yksityinen metodi.</p>
+
+<p><code>extractAnimation()</code> - Luo BMP-kuvatiedostosarjan
+animaatiotiedoston perusteella kutsumalla <code>APDecoder</code>- ja
+<code>BMPFile</code>&nbsp;-luokkien metodeita. Yksityinen metodi.</p>
+
+<p><code>playAnimation()</code> - Käynnistää graafisen käyttöliittymän
+animaation toistoa varten luomalla <code>PlayerWindow</code>&nbsp;-olion.
+Yksityinen metodi.</p>
+
+<h4>Bitmap</h4>
+
+<p>Säiliöolio, jota käytetään kuvadatan siirtämiseen luokkien välillä.</p>
+
+<h4>BMPFile</h4>
+
+<p>BMP-tiedostojen käsittely.</p>
+
+<p><code>read()</code> - Lukee BMP-tiedoston levyltä ja tallentaa
+kuvasisällön <code>Bitmap</code> -olioon.</p>
+
+<p><code>write()</code> - Tallentaa <code>Bitmap</code> -olion kuvasisällön
+BMP-tiedostoon levylle.</p>
+
+<h4>ByteIO</h4>
+
+<p>Pieni apuluokka BMP-tiedoston lukemiseen ja kirjoittamiseen.
+Sisältää muunnokset tavuryhmien ja kokonaislukuarvojen välillä.</p>
+
+<h4>APDecoder</h4>
+
+<p>Animaatiotiedoston lukija ja purkaja.</p>
+
+<p><code>openFile()</code> - Aloittaa animaatiotiedoston purkamisen.</p>
+
+<p><code>getLength()</code> - Antaa animaation pituuden kuvien määränä.</p>
+
+<p><code>getSpeed()</code> - Antaa animaation nopeuden kuvina sekunnissa.</p>
+
+<p><code>getImage()</code> - Purkaa seuraavan kuvan tiedostosta ja palauttaa
+kuvan <code>Bitmap</code>-oliossa.</p>
+
+<p><code>readFrame()</code> - Lukee seuraavan pakatun kuvan datan tiedostosta.
+Yksityinen metodi.</p>
+
+<p><code>decodeFrame()</code> - Purkaa pakatun kuvan datan. Yksityinen
+metodi. Käytännössä delegoi osatoimintoja toisille yksityisille metodeille.
+</p>
+
+<h4>APEncoder</h4>
+
+<p>Animaation pakkaaja ja levylle tallentaja.</p>
+
+<p><code>setFile()</code> - Aloittaa kirjoittamisen tiedostoon.</p>
+
+<p><code>setOptions()</code> - Asettaa animaation kuva- ja
+toistoasetukset.</p>
+
+<p><code>putImage()</code> - Antaa pakkaajalle uuden kuvan pakattavaksi ja
+liitettäväksi levylle kirjoitettavaan animaatiotiedostoon.</p>
+
+<p><code>encodeFrame()</code> - Pakkaa yhden kuvan datan. Yksityinen
+metodi. Käytännössä delegoi osatoimintoja toisille yksityisille metodeille
+sekä luokille <code>ArrayMedianCut</code> ja <code>ListMedianCut</code>.
+</p>
+
+<p><code>writeFrame()</code> - Kirjoittaa yhden pakatun kuvan datan
+animaatiotiedostoon. Yksityinen metodi.</p>
+
+<h3>4.2.2 Graafinen käyttöliittymä (videon toistaminen ruudulla)</h3>
+
+<h4>PlayerWindow</h4>
+
+<p>Graafinen käyttöliittymäikkuna. Periytyy Javan Swing -kirjaston
+ikkunaluokasta JFrame.</p>
+
+<h4>VideoWindow</h4>
+
+<p>Alue, jossa toistettava videokuva näytetään. Periytyy Javan Swing
+-kirjaston luokasta JPanel.</p>
+
+<p><code>paintComponent()</code> - Piirtometodi.</p>
+
+<h4>Sleeper</h4>
+
+<p>Aiheuttaa sopivan mittaisen tauon ohjelmassa jokaisen kuvan purkamisen
+ja piirtämisen jälkeen, jotta animaation toistaminen ruudulle tapahtuisi
+oikealla nopeudella. Vain graafista käyttöliittymää varten.
+<a href="#viite16">[16]</a></p>
+
+<p><code>setInterval</code> - Asettaa animaation kahden kuvan välisen
+toistotauon pituuden.</p>
+
+<p><code>measureWorkingStart()</code> - Merkitsee muistiin ajanhetken
+ennen seuraavan kuvan purkamista kuvan purkamiseen kuluvan ajan mittaamiseksi.
+</p>
+
+<p><code>sleep()</code> - Huomioi viimeisimmän kuvan purkamiseen kuluneen
+ajan ja aiheuttaa sen perusteella ohjelman suorituksessa tauon niin,
+että purkamiseen ja taukoon kuluu yhteensä kahden kuvan välinen toistotauko.
+</p>
+
+<h3><a name="kohta4.2.3">4.2.3 Videon pakkaamiseen liittyviä luokkia</a></h3>
+
+<h4>MedianCut</h4>
+
+<p>Median cut -periaatteella toimivien paletinmuodostajien abstrakti
+kantaluokka.</p>
+
+<p><code>createPalette()</code> - Julkinen metodi, joka on luokan
+käyttörajapintana. Tässä luokassa abstrakti; perillisluokkien tulee se
+toteuttaa.</p>
+
+<p><code>doMedianCut()</code> - Suojattu metodi, jossa on se toiminnallinen
+osuus, joka on yhteinen kaikille median cut -tyyppisille paletinmuodostajille.
+</p>
+
+<h4>ArrayMedianCut</h4>
+
+<p>Median cut -väripaletinmuodostaja, joka käsittelee eri värisävyjen
+ilmenemistä lähdekuvassa yhtenä taulukkona, joka käsittää kaikki mahdolliset
+eri RGB-väriavaruuden pisteet, ts. värisävyt. Käytetään väripaletin
+luomiseen koko kuvalle.</p>
+
+<p><code>createPalette()</code> - Kantaluokan julkinen metodi toteutettuna
+taulukoidun RGB-avaruuden versiona.</p>
+
+<p><code>countOccurrences()</code> - Suojattu metodi, joka laskee eri
+värisävyjen esiintymisen lähdekuvassa ja tallentaa tiedot RGB-avaruuden
+käsittävään taulukkoon.</p>
+
+<h4>ListMedianCut</h4>
+
+<p>Median cut -väripalentinmuodostaja, joka käsittelee eri värisävyjen
+ilmenemistä lähdekuvassa listana eri värisävyistä ja niiden
+esiintymistiheyksistä. Kun lähdekuvassa on valmiiksi vain muutamia satoja
+eri värisävyjä, tämä versio on nopeampi kuin <code>ArrayMedianCut</code>.
+Tämä versio on suunniteltu väripalettien luomiseen 16x16 pikselin
+osakuville.</p>
+
+<p><code>createPalette()</code> - Kantaluokan julkinen metodi toteutettuna
+listattujen värisävyesiintymien versiona.</p>
+
+<p><code>countOccurrences()</code> - Suojattu medoti, joka laskee eri
+värisävyjen esiintymisen lähdekuvassa ja tallentaa tiedot listaan.</p>
+
+<h4>ColorOccurrence</h4>
+
+<p>Värisävyesiintymä <code>ListMedianCut</code> -toteutukselle:
+värisävy komponenteittain ilmentymämuuttujissa
+{ <code>r</code>, <code>g</code>, <code>b</code> }
+sekä tieto siitä, kuinka monta kertaa värisävy esiintyy lähdekuvassa
+(<code>count</code>).</p>
+
+<h4>ColorCuboid</h4>
+
+<p>Median cut -väripaletinmuodostuksessa käytettävä tietorakenne.
+Esittää kolmiulotteisen RGB-väriavaruuden suorakulmaista särmiötä, joka voi
+sisältää tietoa eri värisävyjen esiintymisestä kuvassa, jolle pyritään
+muodostamaan optimaalinen väripaletti. <code>ArrayColorCuboid</code>- ja
+<code>ListColorCuboid</code> -luokkien abstrakti kantaluokka, joka sisältää
+muutaman metodin, joiden toteutus olisi täsmälleen sama edellämainituissa
+periytyvissä luokissa. Lisäksi määriteltynä joukko abstrakteja metodeja, jotka
+periytyvien luokkien pitää toteuttaa. Seuraavat metodit eivät ole
+abstrakteja.</p>
+
+<p><code>longestSide()</code> - Palauttaa tiedon siitä, mikä särmiön
+R-, G- ja B-akselien suuntaisista sivuista on pisin.</p>
+
+<p><code>setProportions()</code> - Asettaa särmiön sijainnin sekä leveyden,
+pituuden ja korkeuden RGB-avaruudessa.</p>
+
+<h4>ArrayColorCuboid</h4>
+
+<p><code>ArrayMedianCut</code> -toteutuksessa käytettävät värisärmiöt,
+jotka käsittelevät värien esiintymisinformaatiota taulukoituna RGB-avaruutena.
+</p>
+
+<p><code>getColor()</code> - Palauttaa painotetun keskiarvon särmiön
+sisältämistä väreistä.</p>
+
+<p><code>getMedian()</code> - Palauttaa annetun akselin (R, G tai B)
+suuntaisen sivun mediaanipisteen.</p>
+
+<p><code>minimize()</code> - Minimoi särmiön koon siten, että särmiön sivut
+koskettavat niitä uloimpia särmiön sisältämiä RGB-avaruuden värisävyjä,
+jotka esiintyvät lähdekuvassa.</p>
+
+<p><code>newInstance()</code> - Luo uuden ArrayColorCuboid -tyyppisen
+olion.</p>
+
+<p><code>split()</code> - Jakaa särmiön annettua akselia
+(R, G tai B) kohti kahdeksi erilliseksi särmiöksi.</p>
+
+<h4>ListColorCuboid</h4>
+
+<p><code>ListMedianCut</code> - toteutuksessa käytettävät värisärmiöt,
+jotka käsittelevät sisältämiään väriesiintymiä listana väriesiintymiä
+(luokka <code>ColorOccurrence</code>).</p>
+
+<p>Metodit ovat toiminnoiltaan <code>ArrayColorCuboid</code>ia vastaavat,
+mutta tässä luokassa toteutettu listaversiona.</p>
+
+<h3>4.3 Vaihtoehtoisia toteutuksia ja nykyisen perustelu</h3>
+
+<p>BMP-tiedoston lukurutiinit ovat omassa luokassaan, jotta niitä voidaan
+tarvittaessa käyttää uudelleen toisissa ohjelmissa. BMP-tiedoston luku- ja
+kirjoitusrutiinit ovat hyvin yksinkertaisia, joten on luontevaa säilöä
+molemmat samaan luokkaan. <a href="#viite1">[1]</a></p>
+
+<p>Graafinen käyttöliittymä on omissa luokassaan jo Javan AWT- ja Swing-
+käyttöliittymäkirjastojen käyttötavan pakottamana.
+<a href="#viite2">[2]</a>, <a href="#viite3">[3]</a> Tässä ratkaisussa on
+se etu, että graafista käyttöliittymää voidaan muuttaa helposti tai
+se voidaan jättää pois tai korvata toisella.</p>
+
+<p>Bitmap on kätevä säiliöolio. Sen avulla voi välittää
+pikselidatan mukana kuvan leveyden ja korkeuden yhtenä ainoana
+metodikutsun parametrina, tai jopa palauttaa kaikki nämä tiedot metodin
+paluuarvona.</p>
+
+<p>Tietysti on kapselointi-idean vastaista, että varsinaisen kuvadatan
+sisältävät kentät ovat julkisia. <a href="#viite4">[4]</a>
+Vaihtoehtona olisi tehdä metodit, jotka
+kirjoittavat ja lukevat kuvadataa pikseli tai alue kerrallaan, mutta
+juuri tässä ohjelmassa tiuhaan toistuvat metodikutsut ja niihin liittyvät
+tarkistukset parametrien oikeista arvoista söisivät suorituskykyä.
+Sittenkin, jos esimerkiksi animaatiota purettaessa dekooderi lisäisi
+RGBBitmap-olioon tietoa aina yksi 8x8 pikselin lohkoista koostuva
+vaakarivi kerrallaan, niin data jouduttaisiin kuitenkin kopioimaan, mikä
+tuntuu tarpeettomalta verrattuna siihen, että dekooderi kirjoittaa datan
+kerran tähän säiliöolioon ja siitä eteenpäin se luetaan kerran kirjoitettaessa
+BMP-tiedostoon tai ruudulle piirrettäväksi.</p>
+
+<p>APEncoder ja APDecoder olisivat voineet olla molemmat samassa luokassa.
+Toisin kuin BMP-rutiinit, ne ovat monimutkaisia. Jos ohjelmasta halutaan
+tehdä versio, joka on vain videota toistava Java-appletti web-sivulla, niin
+animaation pakkausrutiini vie vain turhaan tiedonsiirtoaikaa ja appletti
+käynnistyy hitaammin, kun sen tavukoodi pitää kääntää käytettäväksi.
+Sen sijaan animaatiotiedoston luku- ja kirjoitusrutiinien on luontevaa olla
+samoissa luokissa kuin purku- ja pakkausrutiinien, koska ne lähinnä
+toimivat välittäjänä massamuistille ja edellämainituille
+datankäsittelyrutiineille.</p>
+
+<p>Videonpakkaukseen liittyvät kantaluokat MedianCut ja ColorCuboid eivät ole
+pakollisia; niihin lähinnä on koottu toimintoja, jotka ovat toteutukseltaan
+täsmälleen samanlaiset kunkin kantaluokan perillisluokissa. Periaatteessa
+olisi mahdollista tehdä toisistaan täysin riippumattomat
+ArrayMedianCut/ArrayColorCuboid- ja ListMedianCut/ListColorCuboid
+-luokkakokonaisuudet: APEncoder-luokassa on selvää, milloin käytetään
+mitäkin versiota median cut -toiminnallisuudesta. Lähinnä onkin haluttu
+pienentää ohjelmakoodin kokoa vähentämällä toimintojen toisteisuutta sekä
+eliminoida virheet, jotka voivat syntyä, kun kehitetään kahta luokkaa,
+joissa on paikoitellen identtistä koodia, mutta luokat eivät ole riippuvia
+toisistaan.</p>
+
+<h2><a name="kohta5">5 Algoritmit</a></h2>
+
+<h3><a name="kohta5.1">5.1 Videon pakkaamisen vaiheet lyhyesti</a></h3>
+
+<p>Ohjelman koko videonpakkaamisprosessi sisältää kaiken kaikkiaan
+seuraavat vaiheet järjestyksessä yhtä kuvaa kohti:</p>
+
+<ol>
+<li>Kuva jaetaan 8x8 pikselin ruutuihin ("lohkoihin"), joista merkitään
+tallennettavaksi vain edelliseen kuvaan verrattuna riittävästi muuttuvat
+lohkot. ("Riittävästi" tarkoittaa, että lohko merkitään muuttuvaksi, jos
+jokin siihen kuuluvan pikselin väriarvo muuttuu RGB-etäisyydeltään yli
+sallitun rajan edellisen ja nykyisen kuvan välillä.)
+<br />&nbsp;Tässä vaiheessa
+kuvainformaatio pienenee yleensä noin 50%, tosin pakkautuvuus riippuu
+suuresti kuvamateriaalista: esimerkiksi panoroitava tai zoomattava tausta
+ei pakkaudu tällä menetelmällä lainkaan.
+<br />&nbsp;
+Tätä vaihetta esittää
+<a href="havainnollistus.html#muuttuneet_lohkot">liitteen 4 kohta 2</a>.</li>
+
+<li>Jäljelle jääville lohkoille muodostetaan yhteinen, optimaalinen
+256 värin paletti median cut -algoritmilla. Optimaalinen tarkoittaa, että
+paletin värivalikoima edustaa mahdollisimman hyvin alkuperäiskuvan
+värisävyjen jakaumaa tai kirjoa. Median cut -algoritmi on
+kuvattu tarkemmin kohdassa 5.3. Värit sovitetaan paletille pikseli
+kerrallaan käyttämällä lineaarista kokeilua, toisin sanoen käymällä
+jokaista pikseliä kohti jokainen paletin väri ja valitsemalla se paletin
+väri, jonka etäisyys RGB-avaruudessa on pienin alkuperäisväriin nähden.
+<br />&nbsp;Näin saadaan kuvadata pakattua 1/3, kun alkuperäiskuvan värisyvyys
+on 24&nbsp;/pikseli, mutta 256-värinen kuva voidaan esittää
+8&nbsp;bitillä/pikseli.
+<br />&nbsp;Tätä vaihetta esittää
+<a href="havainnollistus.html#kuvapaletti">liitteen 4 kohta 3.</a>.</li>
+
+<li>Kuva käsitellään 16x16 pikselin lohkoina seuraavasti. Ensinnäkin
+valitaan käsiteltäväksi vain ne 16x16 pikselin lohkot, "päälohkot",
+jotka sisältävät muuttuvia 8x8 pikselin lohkoja. (Muuttumattomat 8x8
+pikselin lohkot 16x16 pikselin lohkoissa merkitään yhtenäisellä värillä.)
+Jokaiselle 16x16 pikselin lohkolle muodostetaan ja sovitetaan oma
+16 värin väripaletti median cutilla ja lineaarisella kokeilulla. Lohkon
+paletin värit ovat koko kuvan 256 värin paletin värejä.
+<br />&nbsp;Tässä vaiheessa saadaan
+kuvainformaatio pienennettyä kooltaan edelleen puoleen, kun
+yhtä pikseliä kohti tarvitaan vain 4 bittiä viittauksena 16 värin
+päälohkokohtaiseen palettiin. Tietenkin jokaista tallennettavaa päälohkoa
+kohti tarvitaan vielä 16 x 1 tavua: päälohkon paletti, jonka värit ovat
+viittauksia koko kuvan 256 värin palettiin.
+<br />&nbsp;Tämä vaihe on esitetty
+<a href="havainnollistus.html#lohkopaletit">liitteessä 4 kohdassa 4</a>,
+sikäli kuin sen voi silmin erottaa, sekä
+<a href="#kohta11.2">tämän dokumentin kohdassa 11.2</a>.
+</li>
+
+<li>Jokaisen 16x16 pikselin lohkon pikselit tallennetaan riveittäin
+vasemmalta oikealle ja ylhäältä alas käyttäen RLE-pakkausta.
+<br />&nbsp;Tästäkin on muutama kuva
+<a href="#kohta11.2">kohdassa 11.2</a>.
+<a href="#viite7">[7]</a></li>
+
+</ol>
+
+<p>Näin ollen yhdestä kuvasta tallennetaan pakattuun animaatiotiedostoon
+seuraavat tiedot:</p>
+
+<ol>
+<li>Mitkä 8x8 pikselin lohkot muuttuvat</li>
+<li>256 värin kuvapaletti</li>
+<li>Kaikki 16x16 pikselin alueet, jotka sisältävät 8x8 pikselin
+muuttuvia alueita</li>
+<li>Jokaiselle 16x16 alueelle 16 värin paletti ja alueen pikselit
+RLE-pakkauksella, 4 bittiä per pikseli pakkaamattomana.</li>
+</ol>
+
+<h3>5.2 Väripaletit sekä koko kuvalle että kuvan osa-alueille</h3>
+
+<p>Ohjelma siis tiivistää kuvaa pakkaamalla väri-informaatiota
+häviöllisesti muodostamalla kullekin animaation kuvalle oman väripaletin,
+jossa on hyvin rajallinen määrä värisävyjä, joilla jokaisella on järjestysnumero.
+Väripaletti muodostetaan niin, että siihen tulevat sävyt edustavat mahdollisimman
+hyvin alkuperäiskuvan värijakaumaa, ja sitten jokaiselle pikselille valitaan
+paletista sävyltään lähinnä oleva väri.</p>
+
+<p>Ensinnäkin ideana on se, että pikselien värien koodaaminen paletin värien
+järjestysnumeroina vie vähemmän informaatiotilaa kuin värien koodaaminen
+RGB-väriarvoina. Tarkemmin: kun yhden RGB-väriarvon esittämiseen tarvitaan 24
+bittiä, mutta paletissa on vain 256 väriä, jotka voidaan esittää kahdeksalla
+bitillä, niin väridatan tilantarve pienenee kolmannekseen.</p>
+
+<p>Toiseksi, kun kuvassa on rajallinen määrä värejä, niin suuri määrä
+hyvin samansävyisiä värejä pelkistyy yhdeksi ainoaksi väriksi, jolloin
+alueet, joilla on vain pieniä värisävyn vaihteluita, pystytään esittämään
+yhdellä värillä, ja yhtenäiset, yksiväriset värialueet edelleen pystytään
+tehokkaasti pakkaamaan jakson pituuden koodauksella (engl. RLE, run-length
+encoding). Oletuksena on, että värien alkuperäinen sävyvaihtelu on pääosin
+niin pientä, että sen katoaminen sävyjen pelkistyessä yhdeksi ainoaksi
+sävyksi ei vielä häiritse silmää merkittävästi, etenkin kun kyse on
+liikkuvasta, jatkuvasti muuttuvasta videokuvasta.</p>
+
+<p>Koko kuvan käsittävän paletin luomisen ja sovittamisen jälkeen kuva jaetaan
+vielä 16x16 pikselin osa-alueisiin, "päälohkoihin", joille luodaan entistä
+rajallisemmat aluekohtaiset paletit. Ideana on pakata väri-informaation viemä
+tila edelleen puoleen sallimalla kullekin osa-alueelle vain 16 erilaista
+väriä, jolloin yhden pikselin väri-informaatio vie vain neljä bittiä.
+Taustalla on oletus siitä, että riittävän pienissä kuvan osa-alueissa on
+keskimäärin niin rajatut värijakaumat, että värien määrä on vain murto-osa
+koko kuvapaletin väreistä.</p>
+
+
+<h4><a name="kohta5.2.1">5.2.1 Lohkokohtaisen palettipakkauksen
+tarpeellisuuden arviointia</a></h4>
+
+<p class="lainaus">- Onko tämä vain huono GIF-animaatio?</p>
+
+<p>Seuraavassa on lyhyesti tutkittu, miten kannattava ratkaisu kuvan
+pakkaaminen vielä toistamiseen osakuvakohtaisilla paleteilla on kuvanlaadun
+ja datan pakkautuvuuden kannalta. Onhan selvää, että kuvan laatu heikkenee
+joka kerran, kun väri-informaatiota tiivistetään häviöllisesti. Jos vielä
+kuvan osa-alueissa tehdään toisistaan riippumattomia häviöllisiä pakkauksia,
+kuvasta saattaa lopulta tulla epäselvä, jos osa-alueet ovat muuttuneet niin
+paljon, ettei niitä enää pysty saumattomasti yhdistämään yhdeksi
+kokonaisuudeksi.</p>
+
+<table>
+<tr>
+<td><img src="kuvat/alkup-0.png" alt="alkuperäinen kuva 24 bit" /></td>
+<td><img src="kuvat/muutos-rgb-etaisyys-8.png" alt="alkuperäinen kuva 24 bit" />
+</td></tr>
+<tr><td colspan="2">Kuvat 5.2.1.1 ja 5.2.1.2.
+Alkuperäiset kuvat. Oikeanpuoleisessa on vain riittävän
+erilaiset 8x8 pikselin alueet verrattuna vasemmanpuoleiseen, muu osa kuvasta
+samaa mustaa väriä. Pakkaamaton 24-bittinen RGB-värikoodaus.<br />
+Koko BMP-tiedostoina 2 * 432&nbsp;kt = <b>864&nbsp;kt</b>.</td>
+</tr>
+<tr>
+<td><img src="kuvat/kuva_paletilla.png" alt="vain kuvapaletti" /></td>
+<td><img src="kuvat/muutos-rgb-etaisyys-8-8bit.png" alt="vain kuvapaletti" />
+</td></tr>
+<tr><td colspan="2">Kuvat 5.2.1.3 ja 5.2.1.4.
+Edelliset kuvat, jolle kummallekin on muodostettu ja
+sovitettu 8-bittinen, oma, koko kuvalle yhteinen paletti.<br />
+8-bittisinä BMP-tiedoistona, joissa on koko kuvalle yhteinen
+RLE-pakkaus: koot 61&nbsp;kt + 61&nbsp;kt = <b>122&nbsp;kt</b>..<br />
+8-bittisinä GIF-tiedostoina, joissa on RLE:tä tiiviimpi LZW-pakkaus:
+koot 57&nbsp;kt + 39&nbsp;kt = <b>96&nbsp;kt</b>. <a href="#viite31">[31]</a> 
+</td></tr>
+<tr>
+<td><img src="kuvat/palettipakkaus+muutokset-0.png" alt="kuva- ja
+lohkopaletit" /></td>
+<td><img src="kuvat/lohkopakkaus+vain-muutokset-1.png" alt="kuva- ja
+lohkopaletit" /></td>
+</tr>
+<tr>
+<td colspan="2">Kuvat 5.2.1.5 ja 5.2.1.6.
+Edelliset kuvat vielä sen jälkeen, kun animaatiotiedostojen pakkaajalla on
+16x16 pikselin alueille on aluekohtaisesti annettu enintään 16 väriä
+käytettäväksi, ja jokaisen tällaisen alueen sisällä käytetty pikselidatan
+RLE-pakkausta.<br />
+Koko yhteensä pakattuna animaatiotiedostona: <b>79&nbsp;kt</b>.
+</td></tr>
+</table>
+
+<p>Edellisestä vertailusta voi todeta, että lohkokohtaisen palettipakkauksen
+käyttäminen todella on melko tehokasta, kun lohkokohtaisten palettien ja
+4-bittisen värikoodauksen yhdistäminen pikselien RLE-pakkaukseen kunkin lohkon
+sisällä tiivistää selvästi enemmän kuin BMP-kuvan koko kuvalle yhteinen
+pikselien RLE-pakkaus 8-bittisellä värikoodauksella, ja jopa hieman enemmän
+kuin GIF-kuva, jossa koko kuva on pakattu RLE:tä paremmin tiivistävällä
+LZW-pakkauksella.  Toisaalta väri-informaation rajoittaminen vielä
+lohkokohtaisilla paleteilla yhtenäisen kuvapaletin lisäksi aiheuttaa värien
+haalistumista ja vääristymistä entisestään (vaikka sitä ei välttämättä
+ensi silmäyksellä havaitse).<a href="#viite17">[17]</a></p>
+
+<p>Jos vertaa kuva- ja animaatiotiedostojen pakkausta analyyttisemmin, niin
+animaatiotiedosto saa tiedostokokovertailussa etumatkaa siinä, että sen ei
+tarvitse käsitellä oikeanpuoleisessa testikuvassa lainkaan mustia,
+muuttumattomia alueita, kun taas BMP- ja GIF-kuviin nämäkin pikselit joudutaan
+tallentamaan ja pakkaamaan. Siinä missä BMP-kuvan RLE-pakkaus pakkaa hyvin
+yhtenäisen värisiä, yhden pikselin korkeuksisia vaakajuovia kuvassa, niin
+animaatiotiedoston pakkaus pakkaa hyvin yhtenäisen värisistä 16x16 pikselin
+ruuduista koostuvia alueita. Lisäksi animaatiotiedoston pakkauksen teho
+heikkenee siksi, että jokaista 16x16 pikselin lohkoa kohti joudutaan
+tallentamaan kiinteä, 16 tavun pituinen lohkokohtainen paletti.</p>
+
+<p>Idea kuvan pakkaamiseen vielä tällä tavalla pienten neliön muotoisten
+osa-alueiden sisällä on tietenkin tullut MPEG-videonpakkauksesta, jossa
+yhtälailla pakataan neliön muotoisten osa-alueiden pikseleitä, joskin
+paljon tehokkaammalla diskreetin kosinimuunnoksen ja Huffman-koodauksen
+yhdistelmällä. Omasta mielestäni tämä MPEG:n idea sovellettuna paletti-
+ja RLE-pakkaukseen toimii yllättävän hyvin verrattuna siihen, kuinka
+vähän kuvanlaatu operaatiossa heikkenee. Tietystikin muutokset kuvassa
+verrattuna alkuperäiseen on selvästi havaittavissa, joten lienee osittain
+makuasia, onko kuvanlaatu vielä hyväksyttävän rajoissa. Loppujen lopuksi
+kyseessä onkin teknisesti melko yksinkertainen kokeilu.
+<a href="#viite19">[19]</a></p>
+
+<h3><a name="kohta5.3">5.3 Median cut -paletinmuodostus</a></h3>
+
+<p>Median cut on luultavasti tunnetuin menetelmä luoda kuvasta rajoitetun
+määrän eri värejä sisältävä paletti, joka on lähes optimaalinen, toisin
+sanoen paletin värit edustavat mahdollisimman hyvin alkuperäiskuvan
+värisävyjakaumaa. Menetelmän nimi tulee siitä, että värisävyjen
+esiintymistiheydet sisältävää RGB-väriavaruutta jaetaan pienimpiin,
+suorakulmaisen särmiön muotoisiin osiin aina jakamalla suurempi
+särmiö kahtia pisimmän sivun mediaanipisteestä.
+<a href="#viite5">[5]</a></p>
+
+<p>Käytännössä algoritmi etenee seuraavasti:</p>
+
+<p> 0. Käy läpi kaikki lähdekuvan pikselit, ja kerää tieto siitä, mitä eri
+värisävyjä kuvassa on, ja kuinka monessa pikselissä mikin värisävy esiintyy.
+Tuloksena on kolmiulotteinen RGB-avaruus, jossa värisävyt ovat pisteinä,
+ja joka pisteessä on tieto värin esiintymistiheydestä.<br />
+1. Luo aloitussärmiö, joka käsittää koko RGB-avaruuden pisteet.
+Minimoi särmiö niin, että sen sivut koskettavat RGB-avaruuden keskustasta
+katsoen uloimpia kuvassa esiintyviä värejä.<br />
+2. Valitse tilavuudeltaan suurin särmiö.<br />
+3. Valitse särmiöstä pisin sivu (R-, G- tai B-akselin suuntainen).<br />
+4. Puolita särmiö valitulta sivulta mediaanipisteestä.<br />
+5. Minimoi kaksi syntynyttä puolikasta kuten kohdassa 1.<br />
+5. Poista alkuperäinen särmiö särmiöiden joukosta ja lisää tilalle
+kaksi syntynyttä puolikasta.<br />
+6. Jos särmiöitä on yhtä monta kuin paletissa tulee olla värejä, jatka
+kohtaan 7. Muuten siirry kohtaan 2.<br />
+7. Käy läpi kaikki syntyneet särmiöt. Jokainen särmiö vastaa yhtä
+paletin väriä siten, että paletin väri on särmiön sisältämien värien
+keskiarvo painotettuna värien esiintymistiheydellä.
+<a href="#viite9">[9]</a></p>
+
+<p>Seuraavassa on havainnollistus algoritmin toiminnasta, tosin
+kuvaamisen helpottamiseksi kahdessa ulottuvuudessa. Datapisteet jaetaan
+esimerkissä kahdeksaan joukkoon (tässä suorakulmioon, jotka vastaavat
+särmiöitä oikeassa kolmiulotteisessa versiossa).  Kumpaakin akselia kohti on
+mahdollista 32 eri arvoa. Musta neliö tarkoittaa, että kyseistä avaruuden
+arvoa esiintyy lähdedatassa enemmän kuin nolla kertaa.</p>
+
+<table>
+
+<tr>
+<td><img src="kuvat/mediancut1a.png" alt="vaihe 1a" /><br />
+1a. Algoritmin kohta 1, aloitussärmiö.</td>
+<td><img src="kuvat/mediancut1b.png" alt="vaihe 1b" /><br />
+1b. Kohta 1, minimointi.</td>
+</tr>
+
+<tr>
+<td><img src="kuvat/mediancut2a.png" alt="vaihe 2a" /><br />
+2a. Kohdat 2-4, särmiön ja sivun valinta, puolitus.</td>
+<td><img src="kuvat/mediancut2b.png" alt="vaihe 2b" /><br />
+2b. Kohta 5, puolikkaiden minimointi.</td>
+</tr>
+
+<tr>
+<td><img src="kuvat/mediancut3a.png" alt="vaihe 3a" /><br />
+3a. Kohdat 2-4, särmiön ja sivun valinta, puolitus.</td>
+<td><img src="kuvat/mediancut3b.png" alt="vaihe 3b" /><br />
+3b. Kohta 5, puolikkaiden minimointi.</td>
+</tr>
+
+<tr>
+<td><img src="kuvat/mediancut4a.png" alt="vaihe 4a" /><br />
+4a. Kohdat 2-4, särmiön ja sivun valinta, puolitus.</td>
+<td><img src="kuvat/mediancut4b.png" alt="vaihe 4b" /><br />
+4b. Kohta 5, puolikkaiden minimointi.</td>
+</tr>
+
+<tr>
+<td><img src="kuvat/mediancut5a.png" alt="vaihe 5a" /><br />
+5a. Kohdat 2-4, särmiön ja sivun valinta, puolitus.</td>
+<td><img src="kuvat/mediancut5b.png" alt="vaihe 5b" /><br />
+5b. Kohta 5, puolikkaiden minimointi.</td>
+</tr>
+
+<tr>
+<td><img src="kuvat/mediancut6a.png" alt="vaihe 6a" /><br />
+6a. Kohdat 2-4, särmiön ja sivun valinta, puolitus.</td>
+<td><img src="kuvat/mediancut6b.png" alt="vaihe 6b" /><br />
+6b. Kohta 5, puolikkaiden minimointi.</td>
+</tr>
+
+<tr>
+<td><img src="kuvat/mediancut7a.png" alt="vaihe 7a" /><br />
+7a. Kohdat 2-4, särmiön ja sivun valinta, puolitus.</td>
+<td><img src="kuvat/mediancut7b.png" alt="vaihe 7b" /><br />
+7b. Kohta 5, puolikkaiden minimointi.</td>
+</tr>
+
+<tr>
+<td><img src="kuvat/mediancut8a.png" alt="vaihe 8a" /><br />
+8a. Kohdat 2-4, särmiön ja sivun valinta, puolitus.</td>
+<td><img src="kuvat/mediancut8b.png" alt="vaihe 8b" /><br />
+8b. Kohta 5, puolikkaiden minimointi.</td>
+</tr>
+
+</table>
+
+<h3><a name="kohta5.4">5.4 Värien sovittaminen muodostetulle väripaletille
+</a></h3>
+
+<p>Jokaiselle pikselille etsitään väriarvoltaan läheisin paletin
+väri seuraavasti.
+Kun pikselin väri on (<i>r</i>, <i>g</i>, <i>b</i>), joissa <i>r</i>:n,
+<i>g</i>:n ja <i>b</i>:n arvot ovat välillä 0..255, ja paletin väriarvot
+ovat <i>pr[i]</i>, <i>pg[i]</i>, <i>pb[i]</i> samaten arvoiltaan välillä
+0..255 kuten myös indeksi <i>i</i>, niin
+sopivin paletin väri pikselille on se, jolla pikselin väriarvon etäisyys
+paletin väristä RGB-väriavaruudessa on pienin. Tämä on se <i>i</i>:n arvo,
+jolla</p>
+
+<div class="sisennys">
+<p class="kaava">sqrt( (pr[i] - r)^2 + (pg[i] - g)^2 + (pb[i] - b)^2 )</p>
+</div>
+
+<p>on pienin. (sqrt(a) on neliöjuuri a:sta, a^2 on a korotettuna toiseen
+potenssiin.) <a href="#viite5">[5]</a></p>
+
+<p>Käytännössä jokaista pikseliä kohti käydään läpi jokainen väripaletin
+väri, mitä kutsutaan lineaariseksi kokeiluksi. Yleisesti ottaen sopivimman
+paletin värin etsiminen mielivaltaiselle värisävylle on ongelma nimeltään
+<i>lähimmän naapurin etsintä</i> (engl. nearest neighbour search), ja
+lineaarinen kaikkien vaihtoehtojen läpikäyminen on helpoimmin toteutettava,
+mutta samalla tehottomin ratkaisualgoritmi ongelmaan.  
+Joitakin kokeiltuja vaihtoehtoisia algoritmeja on selostettu <a
+href="#kohta13.3">kohdassa 13.3</a>. Osoittautui, että parempi ratkaisu,
+jossa olisi jokin kehittynyt hakurakenne, täytyisi olla hyvin
+suunniteltu ja optimoitu, jotta se olisi tehokkaampi kuin
+muutama kerto- ja yhteenlasku, jotka edellämainitussa kaavassa
+pitää suorittaa jokaista paletin väriä kohti lineaarisessa kokeilussa,
+ja joka kuitenkin on melko nopea, kun sen toteuttaa 
+Java-ohjelmointikielellä optimaalisesti. <a href="#viite10">[10]</a></p>
+
+<h2><a name="kohta6">6 Tietorakenteet</a></h2>
+
+<h3>6.1 Taulukot</h3>
+
+<p>Pääosa ohjelman käsittelemästä datasta, kuten bittikarttamuotoiset kuvat
+sekä RGB-väriarvoja sisältävät väripaletit, ovat taulukkoina, koska niiden
+käsittely on nopeinta ja datan määrä ei muutu oleellisesti. Taulukoiden
+käyttöä luonnollisesti tukee se, että animaation kuvat ovat aina saman
+kokoisia, kuvan osa-alueet kiinteän kokoisia neliöitä, ja paleteissa on aina
+enintään melko alhainen maksimimäärä värejä.</p>
+
+<h3>6.2 Listat</h3>
+
+<p>Käytettäessä median cut -paletinmuodostusta erikseen jokaiselle
+16x16 pikselin osakuvalle on koko RGB-väriavaruuden läpikäyminen taulukkona
+aivan liian raskas operaatio. 16x16 pikselin kuvassa on enintään
+16&nbsp;*16&nbsp;=&nbsp;256 erilaista väriä, jotka voidaan tallentaa
+listaksi, ja 256 värin listan lineaarisen läpikäymisen aikavaatimus on
+huomattavasti pienempi kuin taulukkomaisen RGB-väriavaruuden lineaarinen
+läpikäyminen. (Esimerkiksi jos RGB-väriavaruuden tarkkuus on 6 bittiä
+per värikomponentti, niin avaruuden koko on
+(2^6)&nbsp;^3&nbsp;=&nbsp;2^18, mikä on 2^10 kertaa 256:n eli 2^8:n
+pituisen listan koko.)
+Näin edelleen median cut -algoritmin värisärmiöt voivat tallentaa
+kukin omaan listaansa tiedon siitä, mitä kuvan värejä kukin särmiö sisältää.
+</p>
+
+<p>(Tässä viitataan ohjelmakoodin luokkiin <code>ListMedianCut</code>,
+<code>ListColorCuboid</code> ja <code>ColorOccurrence</code>, jotka
+on esitelty lyhyesti <a href="#kohta4.2.3">kohdassa 4.2.3</a>.)</p>
+
+<h2><a name="kohta7">7 Tiedostot</a></h2>
+
+<p>Ohjelma käsittelee yksittäisiä kuvatiedostoja, joista se luo uuden
+animaatiotiedoston, tai vastaavasti erottaa animaatiotiedostosta
+animaation kuvat kukin omaksi kuvatiedostokseen.</p>
+
+<h3>7.1 Kuvatiedostot</h3>
+
+<p>Yksittäiset kuvatiedostot, joista animaatio koostuu, ovat yleisesti
+hyvin tunnetussa BMP-muodossa ja tarkemmin 24-bittisiä, pakkaamattomia
+bittikarttoja. Muita BMP-muodon versioita ohjelma ei siis hyväksy
+eikä tuota. BMP-kuvien tiedostonimen pääte on <code>.bmp</code>.</p>
+
+<h4>7.1.1 BMP-tiedoston rakenne</h4>
+
+<p>Alun tunnistenumeroa lukuun ottamatta kaikki kokonaislukuarvot ovat
+little-endian -tavujärjestyksessä, siis vähiten merkitsevin tavu ensin.
+Kokonaislukuarvot ovat etumerkittömiä ellei toisin mainita.</p>
+
+<table>
+<tr>
+<td class="otsake">Osio</td>
+<td class="otsake">Koko/tavua</td>
+<td class="otsake">Informaatio tai tarkoitus</td>
+</tr>
+
+<tr>
+<td rowspan="4">Alkuosio<br />(BMP header)</td>
+<td>2</td>
+<td>BMP-tiedoston tunnistenumero: heksadesimaalina <code>42 4D</code>.</td>
+</tr>
+<tr>
+<td>4</td>
+<td>BMP-tiedoston koko tavuina</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Varattu. (Luettaessa ei käsitellä, <b>kirjoittaessa
+<code>00 00 00 00</code></b>).
+</td>
+</tr>
+<tr>
+<td>4</td><td>Osoite (tavua alusta), josta bittikarttadata löytyy</td>
+</tr>
+
+<tr>
+<td rowspan="11">Informaatio-osio<br />(DIB header)</td>
+<td>4</td>
+<td>Informaatio-osion koko (40 tavua)</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Kuvan leveys pikseleinä (etumerkillinen kokonaisluku)</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Kuvan korkeus pikseleinä (etumerkillinen kokonaisluku)</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Väritasojen lukumäärä. Oltava arvoltaan 1.</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Värikoodauksen laajuus bittiä per pikseli. Tässä ohjelmassa
+<b>oltava 24</b>.
+</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Pakkausmenetelmä. <b>Oltava 0</b>, mikä tarkoittaa "ei pakkausta".</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Kuvadata-osion koko</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Kuvan vaakaresoluutio. (Pikseliä metrille, etumerkillinen kokonaisluku)
+<b>Kirjoittaessa 2835</b>, mikä vastaa resoluutiota 72 DPI (pistettä tuumalle;
+melko yleisesti sopiva vakio).</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Kuvan pystyresoluutio. (Pikseliä metrille, etumerkillinen kokonaisluku)
+<b>Kirjoittaessa 2835</b>, mikä vastaa resoluutiota 72 DPI (pistettä tuumalle;
+melko yleisesti sopiva vakio).</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Värien määrä paletissa. Luettaessa ei käsitellä, <b>kirjoittaessa 0</b>.
+</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Tärkeiden värien määrä, tai 0, kun jokainen väri on tärkeä.
+Luettaessa ei käsitellä, <b>kirjoittaessa 0</b>.</td>
+</tr>
+
+<tr>
+<td>Kuvadata</td>
+<td>n</td>
+<td>
+Varsinainen kuva pikseli kerrallaan vaakariveittäin vasemmalta oikealle ja
+alhaalta ylös.<br />
+<br />
+Yhden pikselin väriarvo on kolmen tavun ryhmä järjestyksessä BGR,
+jossa B, G ja R tarkoittavat vastaavasti sinisen, vihreän ja punaisen
+komponentin voimakkuutta kukin arvolla väliltä 0-255.<br />
+<br />
+Jokaista vaakariviä kohti tiedostossa täytyy olla neljällä jaollinen määrä
+tavuja. Käytännössä jokaisen vaakarivin pikselidatan jälkeen lisätään
+tarvittaessa yhdestä kolmeen tavua. Luettaessa ne ohitetaan, <b>kirjoittaessa
+arvoina 0</b>.</td>
+</tr>
+</table>
+
+<h3>7.2 Animaatiotiedostot</h3>
+
+<p>Animaatiotiedostojen nimen pääte on <code>.ap</code>, ja niiden rakenne
+on itse suunniteltu.</p>
+
+<h4>7.2.1 AP-tiedoston rakenne</h4>
+
+<p>Kaikki lukuarvot ovat etumerkittömiä kokonaislukuja ellei ole toisin
+merkitty. Muutokset projektin suunnitelmaan nähden on merkitty tekstillä
+"(<b>MUUTOS</b>)" tai "(<b>LISÄYS</b>)", jotka ovat samalla linkkejä
+dokumentin kohtaan 11 "<a href="#kohta11">Poikkeamat suunnitelmasta</a>",
+jossa on lisäselitys kuhunkin muutokseen liittyen.</p>
+
+<table>
+<tr>
+<td class="otsake">Osio</td>
+<td class="otsake">Koko/tavua</td>
+<td class="otsake" colspan="2">Informaatio tai tarkoitus</td>
+</tr>
+
+<tr>
+<td rowspan="7">Alkuosio</td>
+<td>4</td>
+<td colspan="2">AP-tiedoston tunnistenumero: heksadesimaalina
+<code>41 4E 49 50</code>, jota vastaa ASCII-teksti "<code>ANIP</code>".
+</td>
+</tr>
+<tr>
+<td>1</td>
+<td colspan="2">Tiedostorakenteen versio. Arvo = 1.</td>
+</tr>
+<tr>
+<td>4</td>
+<td colspan="2">Kuvien määrä</td>
+</tr>
+<tr>
+<td>4</td>
+<td colspan="2">Animaation nopeus kuvina sekunnissa (engl. FPS, frames per
+second). Liukuluku. Arvo on positiivinen.</td>
+</tr>
+<tr>
+<td>4</td>
+<td colspan="2">Avainkuvien (keyframes) lukumäärä</td>
+</tr>
+<tr>
+<td>2</td>
+<td colspan="2">Kuvan leveys pikseleinä</td>
+</tr>
+<tr>
+<td>2</td>
+<td colspan="2">Kuvan korkeus pikseleinä</td>
+</tr>
+
+<tr>
+<td colspan="4">&nbsp;</td>
+</tr>
+
+<tr>
+<td rowspan="9">Avainkuva</td>
+<td>1</td>
+<td colspan="2">Kuvan tyyppi. Arvo = 1, joka tarkoittaa avainkuvaa.</td>
+</tr>
+<tr>
+<td>4</td>
+<td colspan="2"><a name="ap-lisays1"></a>
+(<a href="#kohta11.3.1"><b>LISÄYS</b></a>) Kuvadatan pituus tavuina. Tähän
+kuvaan kuuluvan pakatun datan pituus tiedostossa tästä eteenpäin.</td>
+</tr>
+<tr>
+<td>4</td>
+<td colspan="2">Avainkuvan järjestysnumero. Ensimmäinen järjestysnumero on 0.
+</td>
+</tr>
+<tr>
+<td>4</td>
+<td colspan="2">Etäisyys edellisen avainkuvaosion alkuun tavuina.
+Etumerkillinen kokonaisluku. Kun tämän avainkuvan järjestysnumero on 0, on
+tämän etäisyyden arvo 0.</td>
+</tr>
+<tr>
+<td>4</td>
+<td colspan="2">Etäisyys seuraavan avainkuvaosion alkuun tavuina.
+Etumerkillinen kokonaisluku. Viimeisessä avainkuvan tämän etäisyyden
+arvo on 0.</td>
+</tr>
+<tr>
+<td>p<sub>i</sub></td>
+<td colspan="2">256 värin <i>kuvapaletti</i>, joka on pakattu.
+Värit esitetään järjestyksessä 0..255 seuraavanlaisissa pakkaussarjoissa.
+<br /><br />
+Ensin on tavu A. Jos tavun A arvo on 0-127, se tarkoittaa, että seuraavilla
+1..128 järjestysnumerolla tavun A arvoa vastaten on uusia värejä, joiden
+väriarvot tulevat seuraavaksi. Silloin tavua A seuraa (1..128)*3 tavua
+väriarvodataa muodossa RGB RGB RGB ..., eli 3 tavua per värikomponentti
+järjestyksessä punainen, vihreä, sininen.<br />
+<br />
+Jos tavun A arvo on 128-255, se tarkoittaa, että seuraavilla 1..128 indeksillä
+tavun A arvoa vastaten on vanhoja värejä, ts. värejä, jotka ovat samat kuin
+edellisessä paletissa vastaavilla järjestysnumeroilla.<br />
+</td>
+</tr>
+
+<tr>
+<td rowspan="3">n * m<sub>j</sub><br /><sub>j = 1..n</sub></td>
+<td colspan="2">(<a href="#kohta11.2"><b>MUUTOS</b></a>)
+Kuvadata jaettuna 16x16 pikselin lohkoihin. Lohkot kuvataan
+yksi kerrallaan. Lohkojen järjestys on vasemmalta oikealle riveittäin ja
+ylhäältä alas. Lohkon sisällä pikselit on kuvattu samaten vasemmalta oikealle
+riveittäin ja ylhäältä alas. Jos kuvan leveys tai korkeus ei ole jaollinen
+16:lla, niin kuvan oikean reunan ja alareunan lohkoissa on tarvittava
+määrä täytepikseleitä.
+<br />
+<br />Lohkot ovat pakattuja, ja niiden sisällä kuvadata on seuraavanlaista.
+Jokaisessa lohkossa on 16 värin <i>lohkopaletti</i>. Lohkon paletin värit
+koostuvat kuvapaletin väreistä, ja ne on valittu siten, että ne edustavat
+mahdollisimman hyvin lohkon pikselien alkuperäisiä väriarvoja 256 värin
+kuvapaletilla.</td>
+</tr>
+<tr>
+<td rowspan="2">m<sub>j</sub></td>
+<td>16 värin <i>lohkopaletti</i>, joka on pakattu. Ensin on 16 bittiä kahtena
+tavuna, jotka ilmaisevat, mitkä värit ovat erilaisia kuin edellisen lohkon
+paletissa.
+Esimerkiksi bittisarja <code>00011000&nbsp;00101001</code> tarkoittaa, että
+värit 3, 4, 10, 12 ja 15 ovat uusia. Näiden kahden bitin jälkeen on
+niin monta tavua kuin edellisessä kahdessa tavussa oli arvoltaan 1 olevia
+bittejä. Nämä tavut ovat kukin yksi 256 värin kuvapaletin väri, ja ovat
+siis tässä lohkossa uusia värejä.
+</td>
+
+</tr>
+<tr>
+<td><a name="ap-lisays3"></a>(<a href="#kohta11.3.2"><b>MUUTOS</b></a>)
+Lohkon pikselit, jotka on pakattu jakson pituuden koodauksella
+neljän bitin mittaisina puolitavuina seuraavasti.<br />
+1. Kaksi puolitavua, joiden bitit ovat <code>ABBB BBBB</code>.<br />
+1.a.1. Jos A = 0, seuraavaksi on <code>(BBB BBBB) + 1</code> eli 1..128
+pikseliä pakkaamatonta dataa.<br />
+1.a.2. Pakkaamaton data, yksi puolitavu per pikseli, joka tarkoittaa
+kyseisen pikselin väriarvoa kyseisen päälohkon paletilla.<br />
+1.b.1. Jos A = 1, seuraavaksi on <code>(BBB BBBB) + 1</code> eli 1..128
+pikseliä pakattua dataa.<br />
+1.b.2. Puolitavu, jonka bitit CCCC ilmaisevat pakattujen pikselien
+värin.<br/>
+<br/>
+Jos puolitavujen kokonaismäärä yhden päälohkon pakatussa pikselidatassa on
+pariton, niin pakatun pikselidatan loppuun lisätään vielä neljä bittiä,
+jotta pakatun pikselidatan pituus on tasan kokonaisia tavuja.</td>
+</tr>
+
+<tr>
+<td colspan="4">&nbsp;</td>
+</tr>
+
+<tr>
+<td rowspan="4">Jatkokuva</td>
+<td>1</td>
+<td colspan="2">Kuvan tyyppi. Arvo = 0, joka tarkoittaa jatkokuvaa.</td>
+</tr>
+<tr>
+<td>4</td>
+<td colspan="2"><a name="ap-lisays2"></a>
+(<a href="#kohta11.3.1"><b>LISÄYS</b></a>) Kuvadatan pituus tavuina. Tähän
+kuvaan kuuluvan pakatun datan pituus tiedostossa tästä eteenpäin.</td>
+</tr>
+<tr>
+<td>p<sub>i</sub></td>
+<td colspan="2">256 värin kuvapaletti kuten avainkuvassa.</td>
+</tr>
+<tr>
+<td>m<sub>i</sub></td>
+<td colspan="2">Kuvadata 16x16 pikselin lohkoina kuten avainkuvassa, paitsi
+että vain edelliseen kuvaan verrattuna muuttuvat 8x8 pikselin lohkot
+tallennetaan, mikä on koodattu seuraavasti.<br />
+<br />
+<a name="ap-lisays4"></a>
+(<a href="#kohta11.3.3"><b>MUUTOS</b></a>)
+Ensinnäkin jokaista 8x8 pikselin lohkoa kohti on yksi bitti muuttuvuustietoa.
+Bitin arvo 0 tarkoittaa, että lohko ei muutu tässä kuvassa, ja arvo 1
+tarkoittaa, että lohko muuttuu tässä kuvassa.<br />
+<br />
+Itse muuttuvuustieto on koodattu seuraavanlaisina sarjoina.
+Ensin on tavu A. Jos A:n arvo on 0..127, on seuraavaksi (1..128).
+edelliseen kuvaan verrattuna lohkoa, joiden muuttuvuustieto pysyy samana.
+Jos A:n arvo on 128..191, seuraavaksi on (1..64) lohkoa, joiden muuttuvuustieto
+on käänteinen edelliseen kuvaan verrattuna.
+Jos A:n arvo on 192..255, seuraavaksi on (1..64) lohkoa, joiden muuttuvuustieto
+tulee seuraavaksi bitti kerrallaan, kuitenkin bittien määrä kokonaisia tavuja
+(täytebittejä on tarvittaessa).
+<br />
+Sarja päättyy tähän, ja sitä seuraa toisia samalla tavalla koodattuja
+sarjoja kunnes kaikki muuttuvuustieto, tai oikeammin muuttuvuustiedon
+muutokset, on esitetty.<br />
+<br />
+Muuttuvuustiedon jälkeen seuraa 16x16 pikselin lohkojen data.
+</td>
+</tr>
+</table>
+
+<p>AP-tiedostossa tulee ensin alkuosio, jonka jälkeen on avainkuvaosioita.
+Jokaisen avainkuvaosion jälkeen voi olla jatkokuvaosioita. Avainkuvaan on
+tallennettu koko kuva, jatkokuvaan vain muuttuvat kohdat suhteessa
+edelliseen kuvaan, joka voi olla jatkokuva tai avainkuva.</p>
+
+
+<h2><a name="kohta8">8 Testaus</a></h2>
+
+<h3>8.1 RGB-värikoodatun bittikarttakuvan piirtäminen ruudulle</h3>
+
+<p>Ensimmäisessä testissä generoitiin ja piirrettiin ruudulle
+yksinkertainen RGB-värikoodattu bittikartta, siis
+kuva, jonka pikselien väriarvot esitetään punaisen, vihreän ja sinisen
+päävärin eli komponentin avulla jokaisen komponentin arvon ollessa väliltä
+0 - 255. Kuvassa punaisen värikomponentin arvo kasvaa nollasta maksimiarvoon
+tasaisesti vasemmasta reunasta oikealle ja vihreän värikomponentin arvo
+tasaisesti yläreunasta alareunaan. Kuvan leveys on suurempi kuin korkeus,
+ja leveyttä ja korkeutta on vähintään 256, jotta kaikki komponenttien arvot
+tulisi esitettyä. Tällä menettelyllä on helppo tarkistaa, että oikeat tavut
+kuvadatassa kuvautuvat oikeille värikomponenteille oikeilla arvoilla, ja
+että pikselien järjestys kuvassa on oikea ja kuva näkyy oikein päin.
+On ilmeistä, että vähäisetkin vääristymät tai virheet tässä vaiheessa on
+helppo havaita silmällä, koska kuva on niin yksinkertainen.</p>
+
+<p><img src="kuvat/testivariliuku.jpg" alt="testiväriliuku, jossa
+punaisen komponentin voimakkuus kasvaa vasemmalta oikealle ja
+vihreän komponentin voimakkuus ylhäältä alas." /><br />
+<br />
+<b>Kuva 8.1.1.</b> Testikuva, jolla varmistetaan, että RGB-koodatun
+kuvan piirtäminen ruudulle toimii.</p>
+
+<p>Periaatteessa näin yksinkertaisella kuvalla on tietysti mahdollista, että
+samanaikaisesti komponentit ja pikselien järjestys kuvautuisivat väärin,
+jolloin tuloksena juuri tämä testikuva näkyisi oikein. Käytännössä
+virhe olisi kuitenkin todennäköisesti helppo havaita ja korjata myöhemmissä
+työvaiheissa.</p>
+
+<h3>8.2 BMP-tiedoston lukeminen ja kirjoittaminen</h3>
+
+<p>BMP-tiedoston lukemista testattiin puoliksi ohjelmallisesti lukemalla
+BMP-tiedosto, näyttämällä siinä oleva kuva ruudulle ja tarkistamalla näkymän
+oikeellisuus silmämääräisesti vertaamalla sitä erillisen
+kuvankäsittelyohjelman näkymään saman tiedoston sisällöstä.
+Silmämääräisen vertailun oletettiin riittävän, koska BMP-tiedoston
+pakkaamattomuudesta johtuen virheet tiedostonlukutoiminnossa näkyvät
+voimakkaina virheinä ruudulle esitetyssä kuvassa; pikselien väriarvot joko
+ovat oikein tai sitten eivät. (Periaatteessa olisi ollut mahdollista
+tarkistaa kuvan täydellinen oikeellisuus ohjelmallisesti vertaamalla
+rajattua ruutukaappausta omasta ohjelmasta oikeaan näkymään pikseli
+pikseliltä. Kuvankäsittelyohjelmassa on tällainen mahdollisuus.)
+Kuvankäsittelyohjelmana oli <a href="http://www.gimp.org">Gimp</a> versio
+2.4.6.</p>
+
+<p>BMP-tiedoston kirjoittamista testattiin lukemalla testikuva testatulla
+BMP-lukutoiminnolla, kirjoittamalla kuva toiseen tiedostoon, ja vertaamalla
+tiedostojen sisältöä silmämääräisesti kuten BMP-tiedoston lukemista
+testattaessa. Lisäksi tiedostojen pituutta ja sisältöä, lähinnä tiedoston
+alkua ja loppua, vertailtiin tavu tavulta heksaeditorilla ja todettiin
+tiedostojen vastaavan toisiaan.</p>
+
+<h3>8.3 Muutokset kuvien välillä</h3>
+
+<p>Kahden kuvan välisten erojen tunnistamista muuttuvina ja muuttumattomina
+lohkoina tutkittiin luomalla ohjelmallisesti
+<a href="havainnollistus.html#muuttuneet_lohkot">testikuva</a> 
+(liite 4, kohta 2), jossa
+mustaa taustaa vasten näkyvät vain muuttuviksi merkityt lohkot, ja arvioimalla
+tuloksen oikeellisuutta silmämääräisesti suhteessa käytettyihin
+<a href="havainnollistus.html#testikuvat">testikuviin</a>
+(liite 4, kohta 1).</p>
+
+<h3>8.4 Kuvapaletin muodostaminen</h3>
+
+<p>Kuvapaletin muodostamista median cut -algoritmilla testattiin luomalla
+algoritmilla testikuvalle 256 värin paletti, sovittamalla se testikuvaan ja
+arvioimalla silmämääräisesti, näyttääkö tulos halutunlaiselta eli edustavatko
+paletin värit alkuperäiskuvan värijakaumaa melko optimaalisesti kuten pitäisi.
+Apuna arvioinnissa käytettiin kuvankäsittelyohjelman paletinmuodostustoimintoa,
+jonka tiedettiin luovan melkein identtisen paletin kuvalle, sekä
+ohjelmallisesti luotua <a href="havainnollistus.html#kuva_paletista">kuvaa,
+joka esittää paletin värejä</a> (liite 4, kohta 3.2).
+Erityisesti palettia esittävästä kuvasta
+on melko helppo silmämääräisesti todeta, että siinä esiintyy jotakuinkin
+samoja värisävyjä kuin alkuperäisessä kuvassa. Silmämääräisen vertailun
+paletin muodostamisesta ja sovittamisesta arvioitiin riittävän, koska
+mallina oli kuvankäsittelyohjelman lähes identtisen tuloksen antava toiminto,
+jonka oletettiin toimivan oikein.</p>
+
+<p>Lohkopalettien muodostamista testattiin kuten kuvapalettienkin arvioimalla
+silmämääräisesti lopputulosta ja toteamalla se riittävän oikeelliseksi ja
+laadukkaaksi ollakseen käyttökelpoinen. Alun perin lohkopaletit muodostettiin
+valitsemalla enintään 16 lohkossa eniten käytettyä väriä, mutta tämä
+<a href="havainnollistus.html#lohkopaletti_eniten_kaytetyt">johti
+kelvottomiin lopputuloksiin</a> (liite 4 kohta 4.3), minkä takia
+myös lohkopaleteille päätettiin käyttää median cut -menetelmää.</p>
+
+<h3>8.5 Pikselien pakkaus RLE-koodauksella lohkon sisällä</h3>
+
+<p>Pakkausta ja purkamista testattiin ohjelmallisen vertailun ja
+silmämääräisen vertailun yhdistelmällä. Testausta varten luotiin
+testidatamatriiseja, jotka esittää yhtä päälohkoa: 16 x 16 arvoa väliltä
+0..15. Testidatamatriisit pakattiin, purettiin ja verrattiin alkuperäisiin.
+Testissä oli kolme vaihetta, yksi jokaisella erilaisella testidatalla.
+Lisäksi pakkaus- ja purkualgoritmeihin lisättiin testitulosteita kertomaan,
+miten ne tulkitsevat ja kirjoittavat dataa.</p>
+
+<p>Seuraavassa on tulosteet testien ajamisesta. Ensin tulee teksti
+"<code>APEncoderWithTests.testBlockPixelCompression()</code>" ja testin numero
+sekä 16x16 pikselin testidatamatriisi. Sitä seuraa teksti
+"<code>compressMasterBlockPixels()</code>", joka ilmoittaa, että datan
+pakkaminen alkaa.  Pakatusta datasta tulostetaan tunnistetut sarjat. Teksti
+"<code>Compressed: N times M</code>" kertoo, että seuraa pakattu sarja, jossa
+on N kappaletta arvoa M.  Teksti "<code>Uncompressed: a1 .. aN</code>" taas
+kertoo, että seuraa pakkaamaton sarja, jossa on arvot a1 .. aN. Pakkaamisen
+jälkeen data puretaan, mistä teksti
+"<code>decompressMasterBlockPixels()</code>" kertoo. Pakattujen ja
+pakkaamattomien sarjojen sisältö tulostetaan purettaessa, ja siinä pitäisi
+olla samat sarjat samassa järjestyksessä kuin pakattaessa. Lopuksi on teksti
+"<code>After compress-decompress:</code>", jota seuraa testidatamatriisin
+sisältö pakkaamisen ja purkamisen jälkeen, sekä ohjelmallisen vertailun tulos
+siitä, pysyikö data muuttumattomana: "<code>Block is correct: </code>";
+"<code>true</code>", jos pysyi, "<code>false</code>", jos ei pysynyt.</p>
+
+<p>Ensimmäinen testidata sisälsi jaksoja, joissa pikselien arvot vaihtelevat,
+sekä jaksoja, joissa pikselien arvot ovat samoja. Testidatassa oli myös
+muutama peräkkäinen jakso, joiden sisällä pikselien arvot ovat samoja.
+Muilta osin data oli pseudosatunnaista.</p>
+
+<pre>APEncoderWithTests.testBlockPixelCompression() 1
+06 06 06 06 06 06 13 00 08 03 06 08 08 08 08 08 
+08 14 14 14 03 00 00 13 13 02 03 12 06 01 01 15 
+15 15 15 15 14 12 09 12 08 08 08 08 08 08 08 11 
+08 15 10 04 01 10 13 00 05 14 15 00 00 00 00 00 
+01 07 07 02 05 05 05 05 02 08 15 07 05 07 06 09 
+01 09 15 01 05 01 15 04 05 13 04 15 02 01 10 08 
+08 08 08 08 15 15 15 05 05 05 05 05 05 05 09 09 
+09 09 09 09 09 03 14 14 14 11 05 05 05 05 05 05 
+05 11 05 14 00 00 00 00 12 12 12 12 01 01 07 04 
+06 08 03 15 04 04 04 12 12 09 08 00 09 01 02 15 
+05 05 05 05 09 09 08 11 12 13 01 07 05 12 14 12 
+00 08 01 14 10 07 02 02 02 02 02 02 02 02 02 02 
+02 02 02 02 11 06 12 08 09 11 01 06 05 11 15 14 
+14 14 14 14 14 14 06 06 06 08 08 08 08 08 08 08 
+06 05 05 04 08 08 14 04 07 10 09 02 13 13 13 13 
+01 01 01 01 01 12 09 09 09 04 00 04 13 01 09 08 
+
+compressMasterBlockPixels()
+Compressed: 6 times 6
+Uncompressed: 13 0 8 3 6 
+Compressed: 6 times 8
+Uncompressed: 14 14 14 3 0 0 13 13 2 3 12 6 1 1 
+Compressed: 5 times 15
+Uncompressed: 14 12 9 12 
+Compressed: 7 times 8
+Uncompressed: 11 8 15 10 4 1 10 13 0 5 14 15 
+Compressed: 5 times 0
+Uncompressed: 1 7 7 2 
+Compressed: 4 times 5
+Uncompressed: 2 8 15 7 5 7 6 9 1 9 15 1 5 1 15 4 5 13 4 15 2 1 10 
+Compressed: 5 times 8
+Uncompressed: 15 15 15 
+Compressed: 7 times 5
+Compressed: 7 times 9
+Uncompressed: 3 14 14 14 11 
+Compressed: 7 times 5
+Uncompressed: 11 5 14 
+Compressed: 4 times 0
+Compressed: 4 times 12
+Uncompressed: 1 1 7 4 6 8 3 15 4 4 4 12 12 9 8 0 9 1 2 15 
+Compressed: 4 times 5
+Uncompressed: 9 9 8 11 12 13 1 7 5 12 14 12 0 8 1 14 10 7 
+Compressed: 14 times 2
+Uncompressed: 11 6 12 8 9 11 1 6 5 11 15 
+Compressed: 7 times 14
+Uncompressed: 6 6 6 
+Compressed: 7 times 8
+Uncompressed: 6 5 5 4 8 8 14 4 7 10 9 2 
+Compressed: 4 times 13
+Compressed: 5 times 1
+compressMasterBlockPixels(): loop ends.
+Uncompressed: 12 9 9 9 4 0 4 13 1 9 8
+
+decompressMasterBlockPixels()
+Compressed: 6 times 6
+Uncompressed: 13 0 8 3 6
+Compressed: 6 times 8
+Uncompressed: 14 14 14 3 0 0 13 13 2 3 12 6 1 1
+Compressed: 5 times 15
+Uncompressed: 14 12 9 12
+Compressed: 7 times 8
+Uncompressed: 11 8 15 10 4 1 10 13 0 5 14 15
+Compressed: 5 times 0
+Uncompressed: 1 7 7 2
+Compressed: 4 times 5
+Uncompressed: 2 8 15 7 5 7 6 9 1 9 15 1 5 1 15 4 5 13 4 15 2 1 10
+Compressed: 5 times 8
+Uncompressed: 15 15 15
+Compressed: 7 times 5
+Compressed: 7 times 9
+Uncompressed: 3 14 14 14 11
+Compressed: 7 times 5
+Uncompressed: 11 5 14
+Compressed: 4 times 0
+Compressed: 4 times 12
+Uncompressed: 1 1 7 4 6 8 3 15 4 4 4 12 12 9 8 0 9 1 2 15
+Compressed: 4 times 5
+Uncompressed: 9 9 8 11 12 13 1 7 5 12 14 12 0 8 1 14 10 7
+Compressed: 14 times 2
+Uncompressed: 11 6 12 8 9 11 1 6 5 11 15
+Compressed: 7 times 14
+Uncompressed: 6 6 6
+Compressed: 7 times 8
+Uncompressed: 6 5 5 4 8 8 14 4 7 10 9 2
+Compressed: 4 times 13
+Compressed: 5 times 1
+Uncompressed: 12 9 9 9 4 0 4 13 1 9 8
+
+After compress-decompress:
+06 06 06 06 06 06 13 00 08 03 06 08 08 08 08 08 
+08 14 14 14 03 00 00 13 13 02 03 12 06 01 01 15 
+15 15 15 15 14 12 09 12 08 08 08 08 08 08 08 11 
+08 15 10 04 01 10 13 00 05 14 15 00 00 00 00 00 
+01 07 07 02 05 05 05 05 02 08 15 07 05 07 06 09 
+01 09 15 01 05 01 15 04 05 13 04 15 02 01 10 08 
+08 08 08 08 15 15 15 05 05 05 05 05 05 05 09 09 
+09 09 09 09 09 03 14 14 14 11 05 05 05 05 05 05 
+05 11 05 14 00 00 00 00 12 12 12 12 01 01 07 04 
+06 08 03 15 04 04 04 12 12 09 08 00 09 01 02 15 
+05 05 05 05 09 09 08 11 12 13 01 07 05 12 14 12 
+00 08 01 14 10 07 02 02 02 02 02 02 02 02 02 02 
+02 02 02 02 11 06 12 08 09 11 01 06 05 11 15 14 
+14 14 14 14 14 14 06 06 06 08 08 08 08 08 08 08 
+06 05 05 04 08 08 14 04 07 10 09 02 13 13 13 13 
+01 01 01 01 01 12 09 09 09 04 00 04 13 01 09 08 
+Block is correct: true</pre>
+
+<p>Toisessa testissä matriisissa oli vain yhtä arvoa. Tällaisen datan pitäisi
+pakkautua maksimaalisesti käytetyllä koodauksella, eli kahdeksi
+maksimipituiseksi pakatuksi jaksoksi. (Jakson maksimipituus on 128
+pikseliä.)</p>
+
+<pre>
+APEncoderWithTests.testBlockPixelCompression() 2
+01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 
+01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 
+01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 
+01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 
+01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 
+01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 
+01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 
+01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 
+01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 
+01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 
+01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 
+01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 
+01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 
+01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 
+01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 
+01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 
+
+compressMasterBlockPixels()
+Compressed: 128 times 1
+Compressed: 128 times 1
+compressMasterBlockPixels(): loop ends.
+
+decompressMasterBlockPixels()
+Compressed: 128 times 1
+Compressed: 128 times 1
+
+After compress-decompress:
+01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 
+01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 
+01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 
+01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 
+01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 
+01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 
+01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 
+01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 
+01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 
+01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 
+01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 
+01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 
+01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 
+01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 
+01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 
+01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 
+Block is correct: true</pre>
+
+<p>Kolmannessa testissä matriisissa vuorotteli kaksi arvoa. Tällaisen datan
+ei pitäisi pakkautua lainkaan, eli pitäisi syntyä kaksi maksimipituista
+pakkaamatonta jaksoa.</p>
+
+<pre>APEncoderWithTests.testBlockPixelCompression() 3
+00 14 00 14 00 14 00 14 00 14 00 14 00 14 00 14 
+00 14 00 14 00 14 00 14 00 14 00 14 00 14 00 14 
+00 14 00 14 00 14 00 14 00 14 00 14 00 14 00 14 
+00 14 00 14 00 14 00 14 00 14 00 14 00 14 00 14 
+00 14 00 14 00 14 00 14 00 14 00 14 00 14 00 14 
+00 14 00 14 00 14 00 14 00 14 00 14 00 14 00 14 
+00 14 00 14 00 14 00 14 00 14 00 14 00 14 00 14 
+00 14 00 14 00 14 00 14 00 14 00 14 00 14 00 14 
+00 14 00 14 00 14 00 14 00 14 00 14 00 14 00 14 
+00 14 00 14 00 14 00 14 00 14 00 14 00 14 00 14 
+00 14 00 14 00 14 00 14 00 14 00 14 00 14 00 14 
+00 14 00 14 00 14 00 14 00 14 00 14 00 14 00 14 
+00 14 00 14 00 14 00 14 00 14 00 14 00 14 00 14 
+00 14 00 14 00 14 00 14 00 14 00 14 00 14 00 14 
+00 14 00 14 00 14 00 14 00 14 00 14 00 14 00 14 
+00 14 00 14 00 14 00 14 00 14 00 14 00 14 00 14 
+
+compressMasterBlockPixels()
+break at sequenceLength == 128
+Uncompressed: [0..127] 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14
+0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0
+14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14
+0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0
+14 0 14 0 14 0 14 0 14 0 14 0 14
+break at sequenceLength == 128
+Uncompressed: [128..255] 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0
+14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14
+0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0
+14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14
+0 14 0 14 0 14 0 14 0 14 0 14 0 14
+compressMasterBlockPixels(): loop ends.
+
+decompressMasterBlockPixels()
+Uncompressed: 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14
+0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0
+14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14
+0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0
+14 0 14 0 14 0 14 0 14
+Uncompressed: 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14
+0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0
+14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14
+0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0 14 0
+14 0 14 0 14 0 14 0 14
+
+After compress-decompress:
+00 14 00 14 00 14 00 14 00 14 00 14 00 14 00 14 
+00 14 00 14 00 14 00 14 00 14 00 14 00 14 00 14 
+00 14 00 14 00 14 00 14 00 14 00 14 00 14 00 14 
+00 14 00 14 00 14 00 14 00 14 00 14 00 14 00 14 
+00 14 00 14 00 14 00 14 00 14 00 14 00 14 00 14 
+00 14 00 14 00 14 00 14 00 14 00 14 00 14 00 14 
+00 14 00 14 00 14 00 14 00 14 00 14 00 14 00 14 
+00 14 00 14 00 14 00 14 00 14 00 14 00 14 00 14 
+00 14 00 14 00 14 00 14 00 14 00 14 00 14 00 14 
+00 14 00 14 00 14 00 14 00 14 00 14 00 14 00 14 
+00 14 00 14 00 14 00 14 00 14 00 14 00 14 00 14 
+00 14 00 14 00 14 00 14 00 14 00 14 00 14 00 14 
+00 14 00 14 00 14 00 14 00 14 00 14 00 14 00 14 
+00 14 00 14 00 14 00 14 00 14 00 14 00 14 00 14 
+00 14 00 14 00 14 00 14 00 14 00 14 00 14 00 14 
+00 14 00 14 00 14 00 14 00 14 00 14 00 14 00 14 
+Block is correct: true</pre>
+
+<p>Testien tulosteista käy siis ilmi, että kaikki testit menevät läpi:
+pakkaus-purkumenettely tuottaa identtisen datan alkuperäiseen nähden,
+ja algoritmi pakkaa datan juuri sellaisiksi jaksoiksi kuin
+pitääkin.</p>
+
+<p>Testauksesta huolimatta pakkausalgoritmi ei toiminut täydellisesti.
+Varsinaisella kuvadatalla testattaessa löytyi virheitä, joissa ensimmäinen
+jakso oli pakattu, kun sen olisi pitänyt olla pakkaamaton, tai pikseleitä
+saattoi olla lopussa enemmän kuin 256. Muuten data oli pakattu oikein, ja
+pikselit olivat oikeilla kohdillaan.</p>
+
+<h2><a name="kohta9">9 Ohjelman tunnetut puutteet ja viat</a></h2>
+
+<h3><a name="kohta9.1">9.1 Häiriöt kuvassa</a></h3>
+
+<p>Vaikka kuville ja sen osa-alueille pyritäänkin muodostamaan optimaalinen
+paletti, niin joskus ilmeisesti alkuperäiskuvassa esiintyvät pienet häiriöt
+saattavat korostua häiritsevästi paletin sovittamisen jälkeen. Seuraavassa on
+yksi esimerkki.</p>
+
+<p><img src="kuvat/artefakteja_kasvoissa_alkuperainen.png"
+alt="eräs alkuperäiskuva" /><br />
+<br />
+<b>Kuva 9.1.1.</b> Eräs alkuperäiskuva alun perin MPEG2-pakatusta
+videosta.</p>
+
+<p><img src="kuvat/artefakteja_kasvoissa.png" alt="ohjelman pakkaama kuva,
+jossa on häiritseviä artefakteja näkyvässä paikassa " /><br />
+<br />
+<b>Kuva 9.1.2.</b> Sama kuva pakattuna. Pienellä todennäköisyydellä
+alkuperäiskuvassa esiintyvät pienet paikalliset häiriöt (MPEG2-artefaktit)
+ovat olleet osasyynä siihen, että rajautun paletin sovittaminen on korostanut
+niitä: kuvassa oikealla olevan hahmon kasvoissa on vaaleita läikkiä, jotka
+eivät selvästikään näytä kuuluvan alkuperäiskuvaan. Epäilyt kohdistuvat
+myös 16x16 pikselin lohkojen paletteihin.</p>
+
+<p><img src="kuvat/artefakteja_kasvoissa_gimp-paletti.png"
+alt="alkuperäiskuva, johon on luotu paletti Gimpillä" /><br />
+<br />
+<b>Kuva 9.1.3.</b> Kuva 9.1.1 muutettuna 256 värin paletille
+Gimp-kuvankäsittelyohjelman omalla toiminnolla.</p>
+
+<p>Arvelen ongelman piilevän paletinmuodostuksessa. Kenties ylläolevan
+testikuvan paletti ei ole aivan täydellisen optimaalinen. Muodostettaessa
+kuvankäsittelyohjelmalla optimaalinen paletti hahmon kasvot saivat yhden
+tasaisen värin. Tämä vihjaisi toisaalta siihen, että lohkojen paletit
+kasvojen kohdalla eivät ole muodostuneet täysin ongelmitta, tai värit
+ovat kuvautuneet osittain väärin.</p>
+
+<p>Lisähuomiona kuvia 9.1.2 ja 9.1.3 verratessa voi todeta, että
+käytetty Gimp-kuvankäsittelyohjelma tuottaa silmämääräisesti
+optimaalisemman paletin. Oma ohjelma käyttää enemmän värejä
+taustan sumuisiin väriliukuihin, jolloin niiden raidoittuminen taas ei
+häiritse silmää niin pahasti.</p>
+
+<p>Vian pystyisi luultavasti korjaamaan muuttamalla <a
+href="#kohta5.3">kohdassa 5.3</a> esitellyn median cut -algoritmin ehtoja sen
+suhteen, mikä särmiö katsotaan "suurimmaksi" niin, että se valitaan
+seuraavaksi puolitettavaksi. Vaihtoehto voisi olla laskea särmiön tilavuuden
+sijasta särmiön sisältämien sävyjen määrä mahdollisesti vielä niiden
+esiintymistiheydellä korostettuna.</p>
+
+<h2><a name="kohta10">10 Kolme parasta ja kolme heikointa kohtaa</a></h2>
+
+<h3>10.1 Parhaat kohdat</h3>
+
+<p>Kohdat 10.1.1 ja 10.1.2 viittaavat dokumentin
+<a href="#kohta4">kohtaan 4</a> ja <a href="#kohta4.2.3">kohtaan 4.2.3</a>.
+</p>
+
+<p><b>10.1.1</b> Median cut -paletinmuodostuksesta on listapohjainen,
+optimoitu versio pienille kuville, joissa on vähän värejä. (Luokat
+<code>anip.mediancut.ListColorCuboid</code> ja
+<code>anip.mediancut.ListMedianCut</code>.) Näin kuvan osa-alueillekin voidaan
+tehdä aluekohtainen paletti kohtuullisessa ajassa: Koko RGB-avaruuden
+taulukoiva perusversio on aivan liian hidas toistettavaksi useampia kertoja
+yhtä pakattavaa kuvaa kohti.</p>
+
+<p><b>10.1.2</b> Median cut -paletinmuodostuksen eri versioiden yhteiset
+osat on koottu yhteisiin kantaluokkiin <code>anip.mediancut.MedianCut</code> ja
+<code>anip.mediancut.ColorCuboid</code>.</p>
+
+<p><b>10.1.3</b> <code>anip.APEncoder</code> -luokan <code>applyPalette()</code>
+-metodissa lasketaan paljon etäisyyksiä kolmiulotteisessa RGB-väriavaruudessa.
+Etäisyyden laskentakaavasta on voitu jättää raskas neliöjuuren ottaminen pois,
+koska sitä ei tarvita, kun etsitään vain arvoltaan pienintä etäisyyttä.
+(Neliöjuurifunktio on aidosti kasvava, joten
+neliöjuuri(a)&nbsp;&lt;&nbsp;neliöjuuri(b)
+jos&nbsp;ja&nbsp;vain&nbsp;jos a&nbsp;&lt;&nbsp;b.)
+Laskentakaava on esitelty dokumentin <a href="#kohta5.4">kohdassa 5.4</a>.</p>
+
+<h3>10.2 Heikoimmat kohdat</h3>
+
+<p><b>10.2.1</b> Median cut -paletinmuodostuksessa metodikutsut hyppivät
+sekavasti edestakaisin kantaluokan ja perillisen metodien välillä.
+(Tässäkin viitataan luokkiin dokumentin
+<a href="#kohta4.2.3">kohdassa 4.2.3</a>.)</p>
+
+<p><b>10.2.2</b> 
+<code>anip.Anip</code> -luokan <code>parseArgs()</code> -metodi
+on sekava runsaiden vertailulohkojen takia.</p>
+
+<p><b>10.2.3</b>
+<code>anip.APDecoder</code> -luokan
+<code>decodeFrameOptimized()</code> -metodi on huonoa ohjelmointityyliä:
+usean pienemmän metodin toiminnot on kasattu yhden metodin sisään
+peräkkäin, jotta vältyttäisiin tiuhaan toistuvien metodikutsujen
+aiheuttamalta viiveeltä. Oikeaoppinen ratkaisu on samassa luokassa
+oleva metodi <code>decodeFrame()</code>, joka tekee täsmälleen samat
+asiat, mutta kutsumalla useita metodeita, jotka suorittavat tehtävän
+eri vaiheet.</p>
+
+<h2><a name="kohta11">11 Poikkeamat suunnitelmasta</a></h2>
+
+<h3>11.1 Kuvapaletin muodostaminen</h3>
+
+<p>Kuvapaletin muodostus toteutettiin lopulta median cut -periaatteella eikä
+octree quantizationilla, koska edellisellä saa laadukkaampia tuloksia
+pienemmillä muistivaatimuksilla ja se osoittautui helpommaksi toteuttaa.
+Ensinnäkin median cutilla värialueiden rajat saa
+määritettyä kohtuullisilla laskentanopeus- ja muistivaatimuksilla täyden
+kahdeksan bitin tarkkuudella per värikomponentti {r, g, b}, kun taas octreellä
+muistivaatimukset kasvavat eksponentiaalisesti suhteessa bittitarkkuuteen,
+jolloin kahdeksalla bitillä muistia tarvitaan jo paljon enemmän kuin
+nykyisissä koti- ja toimistotietokoneissa on. Octreen muistivaatimuksia
+voi rajoittaa laadun kustannuksella pienentämällä paletin octree-puuta
+jatkuvasti uusia värejä lisätessä tai pienentämällä bittitarkkuutta,
+mutta näistäkin huolimatta median cut arvioitiin paremmaksi ratkaisuksi.</p>
+
+<h3><a name="kohta11.2"></a>11.2 Lohkopalettien muodostaminen</h3>
+
+<p>Lohkopaletit päätettiin luoda 8x8 pikselin lohkojen sijasta suuremmille
+16x16 pikselin "päälohkoille" siksi, että 16x16 pikselin alueen arvioitiin
+sisältävän optimaalisemman määrän pikseleitä, joille rajalliset 16 yhteistä
+väriä pystyy vielä sovittamaan ilman, että lopputulos häiritsee silmää
+liikaa.</p>
+
+<p>Oletuksenahan on, että mitä suuremmalle määrälle pikseleitä
+annetaan sama paletti ts. värivalikoima, sitä tehokkaampaa pakkaus on.
+Perustelu tälle on se, että jokaisen lohkon paletti vie tietysti tilaa
+pakatussa videossa, ja mitä suurempia lohkot ovat, sen vähemmän niitä on,
+ja samoin sen vähemmän on lohkojen paletteja viemässä tilaa. Lisäksi, mitä
+vähemmän erilaisia väriarvoja yhdessä lohkossa on, sen todennäköisemmin
+muodostuu usean pikselin yhtenäisiä alueita, joilla on sama väriarvo, ja
+jotka näin ollen pakkautuvat hyvin vaikkapa 
+<a href="http://fi.wikipedia.org/wiki/RLE">jakson pituuden koodauksella</a>
+(ns. RLE-pakkaus). Laadun heikkeneminen muodostettaessa lohkokohtaisia
+paletteja suuremmille kuin 16x16 pikselin lohkoille jätettiin tutkimatta
+luottaen intuitiiviseen arvioon laadun rankasta heikkenemisestä, kun värien
+määrän lohkossa on kuitenkin tarkoitus pysyä kuudessatoista (kuvat 11.2.1
+ja 11.2.2). (Käytännössä asiaa tutkittaessa osoittautui, että noin puolet 
+16x16 pikselin lohkoista sisälsivät alun perin enemmän kuin 16 väriä.)</p>
+
+<table>
+<tr>
+<td><img src="kuvat/lohkon_rle-pakkaus_a.png" alt="yksi 16x16 päälohko" />
+</td>
+<td><b>Kuva 11.2.1.</b> Yksi 16x16 pikselin päälohko, jossa on 16
+värin paletti. Kuva sisältää laajoja aluita samaa tiettyä ruskean ja keltaisen
+sävyä.</td>
+</tr>
+
+<tr><td><img src="kuvat/lohkon_rle-pakkaus_b.png" alt="yksi 16x16 päälohko,
+jossa vaakasuuntaiset pituuskoodatut jaksot tummalla" /></td>
+<td><b>Kuva 11.2.2.</b> Kuvan 11.2.1. lohko, johon on merkitty tummennettuina
+sellaiset vaakasuuntaiset, vähintään neljän pikselin pituiset
+jaksot, joissa pikseleillä on sama väri jakson sisällä. Kuvasta näkyy,
+että tietty ruskea ja keltainen värisävyalue pakkautuvat melko hyvin
+vaakasuuntaisten, peräkkäisten pikselien jaksoiksi.</td>
+</tr>
+</table>
+
+<h3>11.3 Muutokset animaatiotiedoston rakenteessa</h3>
+
+<p><b>11.3.1</b><a name="kohta11.3.1"></a>
+<a href="#ap-lisays1">Avainkuva-</a> ja
+<a href="#ap-lisays2">jatkokuvaosioihin</a> päätettiin lisätä
+pakatun datan pituus tavuina. Tähän oli syynä se, että RLE-pakattua
+pikselidataa puretaan tavu kerrallaan, ja pakatun datan pituus selviää
+dataa purettaessa. Lukeminen tavu kerrallaan kutsuen joka kerran
+varsinaisesta tiedosto-IO:sta vastaavan luokan tavunlukumetodia on
+tarpeettoman kömpelöä, vaikka itse tiedoston lukeminen olisikin
+puskuroitu virraksi. Niinpä kerralla luetaan väliaikaiseen puskuriin
+(taulukkoon) kaikkien pakattujen päälohkojen data pikseleineen ja
+paletteineen, ja lähdetään sitten käymään sitä läpi tavu kerrallaan.
+Näin tiedostonlukuun liittyvät metodikutsut saadaan pudotettua vain
+muutamaan kappaleeseen per animation kuva. (Toisenlainen ratkaisu olisi
+ollut merkitä tiedostoon pakatun datan pituus jokaiselle pakatulle
+päälohkolle erikseen, mutta on selvää, että tällainen ratkaisu
+on kömpelömpi niin tiedostonlukukutsujen määrän kuin tiedoston koonkin
+suhteen.)</p>
+
+<p><b>11.3.2</b> <a name="kohta11.3.2"></a>
+<a href="#ap-lisays3">Pikselidatan pakkaaminen RLE-periaatteella</a>
+muutettiin koodaukseltaan hivenen tehokkaammaksi.</p>
+
+<p><b>11.3.3</b> <a name="kohta11.3.3"></a>
+<a href="#ap-lisays4">Lohkojen muuttuvuustiedon pakkaaminen
+vain muuttuvilta osin.</a> Alun perin oli suunniteltu tallentaa joka
+kuvasta tiedot jokaisen 8x8 pikselin lohkon muuttuvuudesta. Muuttuvuustiedon
+koodausta muutettiin siten, että muuttuvuustieto on kahdeksan bitin sarjoina.
+Muuttuvuustietoa verrataan edellisen kuvan muuttuvuustietoon, ja nykyisen
+kuvan osalta tallennetaan muuttuvuustiedosta vain ne N * 8 bitin sarjat,
+jotka ovat muuttuneet. Muuttuvuustiedon käsitteleminen tavuittain
+yksittäisten bittien sijasta on tehokasta.</p>
+
+<h2><a name="kohta12">12 Toteutunut työjärjestys ja aikataulu</a></h2>
+
+<p class="lainaus"><b>Sisältää: </b>Kerro tässä yleisellä tasolla missä
+järjestyksessä projekti lopulta toteutettiin (mielellään myös päivämäärät).
+Missä poikettiin suunnitelmasta?</p>
+
+<table>
+<tr>
+<td class="otsake">Päivämäärä</td>
+<td class="otsake">Projektin osat</td>
+<td class="otsake">Tuntia</td>
+</tr>
+
+<tr>
+<td>21.10.08 -<br />22.10.08</td>
+<td>BMP-tiedoston lukeminen, kirjoittaminen ja näyttäminen ruudulla</td>
+<td class="oiktasaus">7</td>
+</tr>
+
+<tr>
+<td>22.10.08</td>
+<td>Videonpakkaaja</td>
+<td class="oiktasaus">5</td>
+</tr>
+
+<tr>
+<td>23.10.08</td>
+<td>Videonpakkaaja: paletin muodostaminen octreellä</td>
+<td class="oiktasaus">10</td>
+</tr>
+
+<tr>
+<td>24.10.08</td>
+<td>Videonpakkaaja: paletin muodostaminen median cutilla *</td>
+<td class="oiktasaus">6</td>
+</tr>
+
+<tr>
+<td>24.10.08 -<br />26.10.08</td>
+<td>Videonpakkaaja (mm. optimoitu listaversio median cutista)</td>
+<td class="oiktasaus">16</td>
+</tr>
+
+<tr>
+<td colspan="3">&nbsp;</td>
+</tr>
+
+<tr>
+<td>27.10.08</td>
+<td>Käyttöliittymä: komentoriviparametrit</td>
+<td class="oiktasaus">3</td>
+</tr>
+
+<tr>
+<td>28.10.08 -<br />31.10.08</td>
+<td>Videon yksinkertainen pakkaaminen ja purkaminen.<br />
+Animaatiotiedoston luominen.</td>
+<td class="oiktasaus">15</td>
+</tr>
+
+<tr>
+<td>1.11.08 -<br />2.11.08</td>
+<td>Dokumentaatio</td>
+<td class="oiktasaus">5</td>
+</tr>
+
+<tr>
+<td colspan="3">&nbsp;</td>
+</tr>
+
+<tr>
+<td>2.11.08 -<br />4.11.08</td>
+<td>Videonpakkaaja: pikselien RLE-pakkaus</td>
+<td class="oiktasaus">10</td>
+</tr>
+
+<tr>
+<td>4.11.08</td>
+<td>Dokumentaatio</td>
+<td class="oiktasaus">2</td>
+</tr>
+
+<tr>
+<td>5.11.08 -<br />6.11.08</td>
+<td>Videonpakkaaja: muuttuvuustiedon pakkaus **</td>
+<td class="oiktasaus">6</td>
+</tr>
+
+<tr>
+<td>6.11.08 -<br />7.11.08</td>
+<td>Videonpurkaja, debuggaus</td>
+<td class="oiktasaus">10</td>
+</tr>
+
+<tr>
+<td>8.11.08</td>
+<td>Ohjelmakoodin siistimistä ja lisäkommentointia</td>
+<td class="oiktasaus">1</td>
+</tr>
+
+<tr>
+<td colspan="3">&nbsp;</td>
+</tr>
+
+<tr>
+<td>10.11.08 -<br />12.11.08</td>
+<td>Ohjelmakoodin optimointia. Octree-paletinsovituksen kokeilua. ***</td>
+<td class="oiktasaus">7</td>
+</tr>
+
+<tr>
+<td>12.11.08</td>
+<td>Dokumentaatio</td>
+<td class="oiktasaus">4</td>
+</tr>
+
+<tr>
+<td>13.11.08</td>
+<td>Animaation näyttäminen ruudulla</td>
+<td class="oiktasaus">5</td>
+</tr>
+
+<tr>
+<td>14.11.08</td>
+<td>Videonpakkaaja: lähimmän naapurin hakuongelmaan perehtymistä</td>
+<td class="oiktasaus">3</td>
+</tr>
+
+<tr>
+<td>15.11.08</td>
+<td>Videonpakkaaja: cover tree -hakupuuta käyttävä paletinsovitus</td>
+<td class="oiktasaus">3</td>
+</tr>
+
+<tr>
+<td colspan="3">&nbsp;</td>
+</tr>
+
+<tr>
+<td>24.11.08 -<br />25.11.08</td>
+<td>Dokumentaatio</td>
+<td class="oiktasaus">8</td>
+</tr>
+
+<tr>
+<td>26.11.08 -<br />27.11.08</td>
+<td>Debuggausta</td>
+<td class="oiktasaus">8</td>
+</tr>
+
+<tr>
+<td>28.11.08</td>
+<td>Videonpakkaaja: optimointiyrityksiä octree- ja cover tree -hakupuilla</td>
+<td class="oiktasaus">7</td>
+</tr>
+
+<tr>
+<td>29.11.08 -<br/>30.11.08</td>
+<td>Dokumentaatio</td>
+<td class="oiktasaus">9</td>
+</tr>
+
+<tr>
+<td class="oiktasaus" colspan="2">Tuntia yhteensä:</td>
+<td class="oiktasaus">148</td>
+</tr>
+
+
+</table>
+
+<p>* Octreetä toteuttaessa huomattiin, että median cut tuottaakin
+mitä todennäköisimmin laadukkaampia lopputuloksia ja lisäksi on
+helpompi toteuttaa.</p>
+
+<p>** Muuttuvuustiedon monimutkaisemman pakkauksen toteuttaminen jätettiin
+lopulta kesken, kun laskettiin, ettei se vaikuta kovin paljon lopulliseen
+tiedostokokoon.</p>
+
+<p>*** Octree-paletinsovitus olisi ollut nopeampi kuin vakioratkaisu,
+mutta sen tuottama laatu ei ollut riittävä. Tästä tarkemmin
+<a href="#kohta13.3">kohdassa 13.3</a> ja
+<a href="havainnollistus.html#octree">liitteen 4 kohdassa 3.3</a>.)</p>
+
+<h2><a name="kohta13">13 Arvio lopputuloksesta</a></h2>
+
+<h3>13.1 Kuvanlaatu: vertailua MPEG2-, MPEG4- ja GIF-animaatiopakkauksiin</h3>
+
+<p>Tässä arvioidaan yleisesti koko <a href="#kohta5.1">kohdassa 5.1</a>
+esitettyä videonpakkausta ratkaisumenetelmänä suhteessa muutamaan
+muuhun yleisesti tunnettuun videonpakkausmenetelmään.</p>
+
+<p>Ohjelma voi pakata piirrosanimaatiota jopa 1:30, mikä lähestyy jo
+DVD-levyillä käytettävän MPEG2-pakkauksen tehokkuutta käytetyn tilan
+suhteen. Esimerkiksi jos 120 min videota resoluutiolla 720x480
+toistonopeudella 25 kuvaa sekunnissa vie DVD:llä 4 Gt, pakkaussuhde on
+4&nbsp;*&nbsp;2^30&nbsp;/&nbsp;(120&nbsp;*&nbsp;60&nbsp;*&nbsp;25)&nbsp;:
+&nbsp;720&nbsp;*&nbsp;480&nbsp;*&nbsp;3 ~ <b>1&nbsp;:&nbsp;40</b>.
+Keskimääräinen pakkaussuhde tuskin kuitenkaan on näin hyvä; jos pakattava
+videokuva sisältää taustan, joka muuttuu jatkuvasti esimerkiksi näkymää
+panoroitaessa, pakkaussuhde saattaa jäädä johonkin
+<b>1&nbsp;:&nbsp;10</b> tienoille.</p>
+
+<p>Lisäksi ohjelman kuvanlaatu MPEG2:een verrattavalla keskimääräisellä
+pakkaussuhteella on silminnähtävästi huonompi, joskin vielä siedettävän
+rajoilla niin, että ohjelmalla pakattua DVD-resoluutioista elokuvaa viitsisi
+ehkä vielä katsoa. Java-kielellä toteutettuna videon purkaminen on luultavasti
+kaksi tai kolme kertaa laskennallisesti raskaampi operaatio kuin vastaavan
+videomateriaalin purkaminen MPEG2-muodosta C-kielellä toteutetulla ohjelmalla.
+Saattaisikin olla mielenkiintoista verrata C:llä toteutetun
+videonpurkajan reaaliaikaista suorituskykyä C-kieliseen MPEG2-purkajaan
+etenkin, jos molempien suorituskyky on ohjelmoitaessa optimoitu kunnolla.</p>
+
+<p>Joka tapauksessa nykyisellään toteutettu videon pakkaaja ja purkaja
+<b>ei pärjää pakkaustehokkuudessa ja kuvanlaadussaan
+MPEG2-videonpakkaukselle</b>
+puhumattakaan uudemmasta H.264/MPEG-4&nbsp;AVC:sta. Lähinnä videonpakkaaja
+säilyttää kuvassa yksityiskohdat huomattavasti paremmin kuin
+diskreettiin kosinimuunnokseen perustuvat nykyiset MPEG2- ja MPEG4-ratkaisut.
+Kuitenkin testimateriaalista käy ilmi, että jopa piirrosanimaatio, jossa
+olettaisi olevan niukempi väriskaala kuin realistisessa videokuvassa,
+sisältää keskimäärin sen verran suuren väriskaalan, että toteutetun
+videonpakkaajan palettipakkauksella saatu kuvanlaatu on kuitenkin
+MPEG-tyyppisiä verrokeitaan huonompi.</p>
+
+<p><a href="#kohta5.2.1">Kohdassa 5.2.1</a> on suppean tutkimuksen
+valossa perusteltu, miksi toteutettu <b>videonpakkaaja on GIF-animaatiota
+parempi kuvanlaadultaan ja pakkaussuhteeltaan</b>.</p>
+
+<p>Videonpakkaajan toteuttaminen Java-ohjelmointikielellä mahdollistaisi
+helposti sillä pakatun videomateriaalin liittämisen WWW-sivulle
+Java-applettina: Jos sivun käyttäjän tietokoneessa on jo valmiiksi asennettuja
+Java-ajoympäristö, kuten useimmissa web-selaimella varustetuissa koneissa
+nykyään on, ei käyttäjän tarvitse asentaa mitään erityisiä ohjelmallisia
+lisäosia koneeseensa voidakseen katsoa videon. Nykyään kuitenkin
+web-käytössä Adobe Systemsin Flash -tekniikka on teknisesti ylivertainen
+suorituskykynsä ja kuvanlaatunsa suhteen. <a href="#viite18">[18]</a></p>
+
+<h3>13.2 Ohjelmoinnin laatu</h3>
+
+<p>Mielestäni ohjelman luokkarakenne, luokkien väliset rajapinnat ja
+osatehtävien jakaminen metodeihin luokkien sisällä mahdollistavat melko
+hyvin ohjelman kehittämisen jatkossa. Ohjelmakoodi on mielestäni myös
+kommentoitu siten, että sitä on mahdollista kehittää eteenpäin ilman
+ylivoimaista perehtymisen vaivaa ainakin, jos kehittälle annetaan myös
+tämän dokumentin kaltainen tekninen dokumentti, joka sisältää tiedot
+videonpakkauksen ja sen osamenetelmien pääperiaatteista.</p>
+
+<p>Esimerkkinä laajennettavuudesta on mahdollisuus siirtyä haluttuun
+kohtaan videota sitä toistettaessa. <code>APDecoder</code> -luokan
+julkisessa rajapinnassa on metodi <code>seek()</code>, jolla voi
+periaatteessa antaa videonpurkajalle komennon siirtyä videon
+purkamisessa haluttuun kohtaan (vaikka toiminnallisuutta ei olekaan
+kyseiseen metodiin vielä toteutettu kunnolla). Samaten videotiedoston
+rakenne tukee siirtymistä eteen- ja taaksepäin videon toistamisessa:
+videota pakatessa tiedostoon luodaan kohtuullisin välein avainkuvia,
+jotta haluttaessa siirtyä mielivaltaiseen kohtaan ei tarvitse purkaa
+kaikkea videota tiedoston alusta lähtien. Normaalistihan kuvat ovat
+riippuvia edellisistä kuvista, koska kuvista tallennetaan vain muuttuvat
+osat. Tarkemmin <code>APEncoder</code> -luokassa on vakiot
+<code>MAX_KEYFRAME_INTERVAL</code>, <code>MIN_KEYFRAME_INTERVAL</code> ja
+<code>MIN_CHANGE_FOR_KEYFRAME</code>, joita edelleen käytetään hyväksi
+<code>encodeFrame()</code> -metodissa. Myös videontoistoikkuna on toteutettu
+niin, että videon toistamista varten on erityinen komponentti, luokka
+<code>VideoWindow</code>, siksi, että siten videontoistokomponentin
+sisältävään ikkunaan, luokka <code>PlayerWindow</code>, voi helposti lisätä
+muita komponentteja, kuten painikkeet ja liukusäätimen, jotta käyttäjä voi
+antaa niillä komennnon siirtyä videon toistamisessa haluttuun kohtaan
+tiedostoa.</p>
+
+<p>Toinen laajennettavuusominaisuus on tiedostoformaation versio
+animaatiotiedoston alussa. Se mahdollistaa sellaisen monimutkaisemman
+pakkauksen kehittämisen, jossa tiedostoon tallennettavat tiedot eivät
+ole enää samassa muodossa kuin nykyisessä tiedostomuodossa kuitenkin
+niin, että uudemmat ohjelman versiot, jotka käyttävät tätä edistyneempää
+pakkausta, pystyvät tarpeen vaatiessa myös lukemaan ja kirjoittamaan
+ensimmäisen tiedostoformaatin version mukaisia tiedostoja.</p>
+
+<p>Ohjelman suurin puute on sen hitaus videota pakattaessa ja purettaessa
+etenkin, jos purkamisen on tarkoitus tapahtua niin, että animaatiota voidaan
+toistaa esimerkiksi DVD-levyillä käytetyillä resoluutioilla ja
+toistonopeuksilla. Optimointi kokoamalla usein kutsuttavien metodien
+toimintaa kutsujametodiin harkitusti sekä pyrkimällä vähentämään
+turhien tarkistusten ja arvojen uudelleenlaskennan määrää saattaisi
+auttaa. Myös ohjelmointikielen vaihtaminen johonkin laitteistoläheisempään
+kieleen, kuten C-kieleen, saattaisi auttaa.</p>
+
+<h3><a name="kohta13.3">13.3 Kuva paletille: miten paremmin?</a></h3>
+
+<p>Kuvan sovittaminen paletille etsien jokaiselle pikselille sopivin
+värisävy paletista on lähimmän naapurin etsimisen ongelma. Sen ratkaiseminen
+käyden lineaarisesti jokainen värisävy läpi jokaista pikseliä kohti on
+laskennan vaativuuden kannalta huonoin mahdollinen toimiva ratkaisu ongelmaan.
+<a href="#viite10">[10]</a> Paremmalla ratkaisulla videon pakkaaminen
+saattaisi nopeutua merkittävästi.</p>
+
+<p>Paletinsovitusta kokeiltiin octree- ja cover tree -hakupuilla, mutta
+kumpikaan niistä ei tuottanut merkittävästi parempia tuloksia. Ensinnäkin
+octree, joka luokittelee värejä R-, G- ja B- komponenttien eniten
+merkitsivimmistä biteistä vähiten merkitseviin, oli kylläkin nopea nopeuttaen
+videon pakkaamista jopa 30%, mutta sen toimintaperiaatteesta johtuen se
+ei useinkaan löytänyt riittävän tarkasti lähintä sopivaa väriä ainakaan
+niin, ettei tulos olisi häirinnyt silmää. Virheenkorjaus lineaarisella
+kokeilulla octreen jälkeen ei auttanut riittävästi. Tästä on esimerkki
+<a href="havainnollistus#octree">liitteen 4 kohdassa 3.3</a>.
+<a href="#viite10">[10]</a>, <a href="#viite11">[11]</a>,
+<a href="#viite12">[12]</a></p>
+
+<p>Toiseksi cover tree kylläkin kykeni etsimään aina parhaan mahdollisen
+värin, mutta se oli jopa hitaampi kuin kaikkien 256 värin kokeileminen
+yksitellen. Arvelen hitauden johtuvan siitä, että 256 datayksikön joukko
+on lopultakin melko pieni, joten koska cover treen hakumetodi on sarja
+rekursiivisia metodikutsuja, niin metodikutsut hidastavat suoritusta
+siinä määrin, että kyseinen hakupuu ei enää olekaan tehokas.
+<a href="#viite13">[13]</a>, <a href="#viite14">[14]</a></p>
+
+<h3>13.4 Mahdollisuuksia pakkaussuhteen parantamiseen</h3>
+
+<ul>
+<li>8x8 pikselin lohkojen muuttuvuustiedosta tallennetaan vain muutokset
+edellisen kuvan muuttuvuustietoon nähden, ja syntynyt data pakataan
+RLE-koodauksella.</li>
+
+<li>16x16 pikselin lohkoja tallentaessa tallennetaan lohkon paletista
+vain muutokset viimeksi tallennetun lohkon palettiin nähden, ja värejä
+pyritään käyttämään uudestaan siten, että samalle värille tulee sama
+paletin indeksi kuin viime lohkossa, jolloin värin muutosta ei tarvitse
+tallentaa.</li>
+
+<li>Lohkojen pikselit voisi pakata RLE-koodauksen jälkeen vielä LZW- tai
+Huffman-koodauksella, jolloin toistuvat arvosarjat pakkautuisivat.</li>
+</ul>
+
+<h3>13.5 Mahdollisuuksia kuvanlaadun parantamiseen</h3>
+
+<ul>
+<li>Rajalliselle määrälle lohkoja voisi sallia enemmän kuin 16 väriä,
+esimerkiksi 5 bitillä saatavat 32 tai 6 bitillä saatavat 64. Tämä
+parantaisi kuvanlaatua paikoitellen sellaisissa kuvan osa-alueissa, jotka
+sisältävät paljon pieniä, kirjavia yksityiskohtia (esimerkiksi piirroshahmojen
+silmät, jos ne on alun perin kuvattu kovin tarkasti).</li>
+</ul>
+
+<h2><a name="kohta14">14 Viitteet</a></h2>
+
+<p><a name="viite1">[1]</a>
+<a href="http://en.wikipedia.org/wiki/BMP_file_format">BMP file
+format</a>. Wikipedia. Viitattu 9.10.2008</p>
+
+<p><a name="viite2">[2]</a>
+<a href="http://java.sun.com/j2se/1.5.0/docs/api/">Java<sup>TM</sup>
+2 Platform Standard Edition 5.0 API Specification</a>. Sun Microsystems, Inc.
+ Viitattu 11.10.2008</p>
+
+<p><a name="viite3">[3]</a>
+<a href="https://noppa.tkk.fi/noppa/kurssi/t-106.1240/luennot">
+TKK:n kurssin T-106.1240 Ohjelmoinnin jatkokurssi T1 (Java) luentokalvot</a>.
+Otto Seppälä. Viitattu 11.10.2008.</p>
+
+<p><a name="viite4">[4]</a>
+<a href="https://noppa.tkk.fi/noppa/kurssi/t-106.1203/">
+Laatuseikkoja</a>. TKK:n kurssin "T-106.1200 Ohjelmoinnin perusteet L (Java)"
+luento. Juha Sorva. Viitattu 11.10.2008.</p>
+
+<p><a name="viite5">[5]</a>
+<a href="http://en.wikipedia.org/wiki/Color_quantization">Color
+quantization</a>. Wikipedia. Viitattu 11.10.2008</p>
+
+<p><a name="viite7">[7]</a>
+<a href="http://en.wikipedia.org/wiki/Run_length_encoding">Run-length
+encoding</a>. Wikipedia. Viitattu 12.10.2008</p>
+
+<p><a name="viite8">[8]</a>
+<a href="http://en.wikipedia.org/wiki/Huffman_coding">Huffman coding</a>.
+Wikipedia. Viitattu 12.10.2008</p>
+
+<p><a name="viite9">[9]</a>
+<a href="http://algolist.manual.ru/graphics/quant/qoverview.php">
+Color Quantization Overview</a>. Algolist.manual.ru. Viitattu 12.10.2008</p>
+
+<p><a name="viite10">[10]</a>
+<a href="http://en.wikipedia.org/wiki/Nearest_neighbor_search">
+Nearest neighbor search</a>. Wikipedia. Viitattu 12.11.2008.</p>
+
+<p><a name="viite11">[11]</a>
+<a href="http://en.wikipedia.org/wiki/Octree">Octree</a>. Wikipedia.
+Viitattu 29.11.2008.</p>
+
+<p><a name="viite12">[12]</a>
+<a href="http://www.cubic.org/docs/octree.htm">Octree Color Quantization</a>.
+Nils Pipenbrinck. Viitattu 29.11.2008.</p>
+
+<p><a name="viite13">[13]</a>
+<a href="http://en.wikipedia.org/wiki/Cover_tree">Cover tree</a>.
+Wikipedia. Viitattu 29.11.2008.</p>
+
+<p><a name="viite14">[14]</a>
+<a href="http://hunch.net/~jl/projects/cover_tree/cover_tree.html">
+Cover Tree for Nearest Neighbor calculations</a>. John Langford.
+Viitattu 29.11.2008.</p>
+
+<p><a name="viite15">[15]</a>
+<a href="http://hunch.net/~jl/projects/cover_tree/icml_final/final-icml.pdf">
+Cover Trees for Nearest Neighbor</a>. Alina Beygelzimer, Sham Kakade ja John
+Langford. Viitattu 29.11.2008.</p>
+
+<p><a name="viite16">[16]</a>
+<a href="http://java.sun.com/products/jfc/tsc/articles/timer/">
+Using Timers In Swing Applications</a>. Sun Microsystems, Inc.
+Viitattu 13.11.2008.</p>
+
+<p><a name="viite17">[17]</a>
+<a href="http://en.wikipedia.org/wiki/Gif">Graphics Interchange Format</a>.
+Wikipedia. Viitattu 12.11.2008.</p>
+
+<p><a name="viite18">[18]</a>
+<a href="http://en.wikipedia.org/wiki/Adobe_Flash">Adobe Flash</a>.
+Wikipedia. Viitattu 29.11.2008.</p>
+
+<p><a name="viite19">[19]</a>
+<a href="http://en.wikipedia.org/wiki/MPEG-1#Macroblocks">
+MPEG-1: Macroblocks</a>. Wikipedia. Viitattu 30.11.2008.</p>
+
+<h2><a name="kohta15">15 Liitteet</a></h2>
+
+<p>LIITE 1: <a href="koodi/">Ohjelmakoodi</a></p>
+
+<p>LIITE 2: <a href="javadoc/public/index.html">Ohjelmakoodin
+Javadoc-dokumentaatio (public -määreiset osat)</a></p>
+
+<p>LIITE 3: <a href="javadoc/private/index.html">Ohjelmakoodin
+Javadoc-dokumentaatio (private -määreiset osat)</a></p>
+
+<p>LIITE 4: <a href="havainnollistus.html">Videonpakkauksen näkyviä
+pääperiaatteita havainnollistava kuvasarja</a>, "havainnollistusliite"</p>
+
+<p>LIITE 5: <a href="testidata/">Testidataa</a>: kuvasarja BMP-tiedostoina
+<code>kuvaXXXX.bmp</code> sekä kuvasarjasta tehty animaatiotiedosto
+<code>animaatio.ap</code>.</p>
+
+<p><b>Huomautus liitteestä 1:</b> Ohjelmakoodi kääntyy helposti
+komentoriviltä Sunin Java-kääntäjällä antamalla hakemistossa
+<code>koodi</code> komento <br />
+<code>javac anip/*.java anip/gui/*.java anip/mediancut/*.java</code> .</p>
+
+<p><b>Huomautus liitteestä 5:</b> Kuvamateriaalin lähde sama kuin liitteessä
+4.  Animaation oikea nopeus on 25 kuvaa sekunnissa. Animaation pakkaaminen
+kestää neljä minuuttia koneella, jossa on yksiytiminen 1,4 GHz suoritin ja
+Sunin Java versio 1.6.</p>
+
+<hr />
+<p>30.11.2008 <a href="mailto:atilante nospam+at cc dot hut dot fi">Artturi
+Tilanterä</a></p>
+
+<p class="huomautus">Kuvien pakkauksessa käytetyn testimateriaalin lähde on
+piirrossarja <i>The Melancholy of Haruhi Suzumiya</i>, &copy; 2006-2007 Nagaru
+Tanigawa / Noizi Ito / member of SOS.</p>
+
+</body>
+</html>

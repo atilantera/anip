@@ -1,0 +1,519 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fi" lang="fi">
+<head>
+<title>Animaatiotiedostojen pakkaaja - Yleissuunnitelma - Artturi Tilanterä
+</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="css/tyyli.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+
+<h1>Paletti- ja muutostiivistävä animaatiotiedostojen pakkaaja</h1>
+<h4>Projektityön yleissuunnitelma, T-106.1240 Ohjelmoinnin jatkokurssi T1</h4>
+<p>Artturi Tilanterä</p>
+<p>Tik IV</p>
+<p>7.10.2008</p>
+
+<h2>Yleiskuvaus</h2>
+
+<p>Toteutan projektityönäni animaatiotiedostojen pakkaajan, aihe #280, jonka
+<a href="http://www.cs.hut.fi/Opinnot/T-106.1240/2008_external/projekti/aiheet2008/280ed.html">
+tehtävänanto kurssin web-sivuja</a> lainaten on seuraava:</p>
+
+<div class="lainaus">
+
+<p>&rdquo;Tee kuva-animaatiotiedostojen pakkaus- ja
+purkuohjelma. Voit joko suunnitella oman animaatioformaatin, tai käyttää
+jotain valmista.</p>
+
+<p>Ohjelman työstää valituista raakakuvista animaatiotiedoston,
+jonka tallentaminen levylle on tehokkaampaa (vie vähemmän tilaa) kuin jokaisen
+raakakuvan tallentaminen erikseen. Vastaavasti ohjelma osaa myös purkaa
+animaatiotiedosto takaisin raakakuviksi.</p>
+
+<p>Raakakuvalla tarkoitetaan bittikarttaa, jossa jokaisen
+pikselin väriarvo on erikseen ilmoitettu.</p>
+
+<p>Algoritmien ei tarvitse olla täysin symmetrisiä eli puretut
+raakakuvat voivat erota alkuperäisistä (kuten esim. MPEG)!</p>
+
+<p>Ohjelman EI tarvitse osata näyttää ruudulle animaatioita.</p>
+
+<p>Kiinnitä ohjelmassasi huomiota erityisesti purkunopeuteen
+sekä tilansäästöön (pakkausnopeudella ei ole niin suurta merkitystä, koska se
+pitää tehdä vain yhden kerran). Pohdi dokumentaatiossa formaatin soveltuvuutta
+eri tarkoituksiin symmetrisyydestä, tilansäästöstä ym. seikoista
+johtuen.&nbsp;&ndash;&nbsp;&ndash;&nbsp;&ndash;</p>
+
+<h3>Vaatimukset</h3>
+
+<h4>Keskivaikea-vaativa</h4>
+
+<ul>
+<li>ohjelmassa on kaksi moodia: pakkaus- ja purkumoodi</li>
+
+<li>pakkausmoodissa ohjelma lukee käyttäjän määrittelemät raakakuvat
+tiedostoista, tekee niistä animaation ja tallettaa sen valitun nimiseen
+animaatiotiedostoon</li>
+
+<li>purkumoodissa toiminta etenee päinvastaiseen suuntaan: ohjelma lukee
+käyttäjän valitseman animaatiotiedoston, purkaa animaation ja tallettaa kuvat
+valitun nimisiin tiedostoihin (esim. kuva0001.bmp, kuva0002.bmp,...)</li>
+
+<li>ohjelman EI tarvitse osata näyttää ruudulle animaatioita, mutta siitä saa
+plussaa ja saattaapa se helpottaa ohjelman debug-operaatiotakin</li>
+
+<li>arvosteluun vaikuttaa keskeisesti pakkausalgoritmin laatu: simppelisti
+ja vähän pakkaavalla algoritmilla varustetun työn katsotaan olevan keskivaikea,
+paljon tiivistävällä vaativa&rdquo;</li>
+</ul>
+
+</div>
+
+<p>Olen ajatellut toteuttaa työn vaikeusasteella <b>vaativa</b> perusteena
+seuraavan kaltainen toiminnallisuus: Pakkausalgoritmi tulee olemaan
+häviöllinen ja melko tehokas; se perustuu ensisijaisesti väri-informaation
+rajoittamiseen yksittäisissä kuvissa ja niiden osa-alueissa, sekä vain
+muuttuvien osa-alueiden tallentamiseen kuvan vaihtuessa seuraavaan.
+Lisäksi yritän saada ohjelman näyttämään animaation ruudulle.</p>
+
+<h2><a name="kayttoliittyman_luonnos">Käyttöliittymän luonnos</a></h2>
+
+<p>Ohjelma on komentorivipohjainen. Tehtäessä animaatiotiedosto yksittäisistä
+kuvista annetaan parametreina komento pakata, luettavien kuvatiedostojen
+nimien yhteinen alkuosa sekä luotavan animaatiotiedoston nimi. Esimerkki:</p>
+
+<p><code>java anip c kuva0000 25 animaatio.ap</code></p>
+
+<p>Edellämainitussa <code>anip</code> on ohjelmatiedoston nimi ja
+<code>c</code> pakkauskomento. <code>kuva0000</code> on kuvatiedostojen nimien
+yhteinen alkuosa, ja nollat sen perässä osoittavat numeroinnin pituuden:
+tässä neljä nollaa tarkoittaa, että ohjelma aloittaa tiedostosta nimeltä
+<code>kuva0001.bmp</code> edeten numerojärjestyksessä, ja lopettaa tiedostoon
+nimeltä <code>kuva9999.bmp</code>, tai kun tulee vastaan tiedosto, jonka
+nimistä ei enää löydy.
+Parametri <code>25</code> kertoo animaation toistonopeuden kuvina sekunnissa.
+Se voi olla kokonais- tai desimaaliluku. <code>animaatio.ap</code> on
+luotavan animaatiotiedoston nimi.</p>
+ 
+<p>Animaatiotiedoston purkaminen yksittäisiksi kuvatiedostoiksi tapahtuu
+vastaavasti komennolla</p>
+
+<p><code>java anip x animaatio.ap kuva</code>,</p>
+
+<p>jossa <code>x</code> on purkukomento, <code>animaatio.ap</code> on
+luettavan animaatiotiedoston nimi ja <code>kuva</code> luotavien
+kuvatiedostojen nimien yhteinen alkuosa samoin kuin luotaessa
+animaatiotiedostoa, paitsi että kuvatiedostojen nimi on aina muotoa
+kuvaXXXX.bmp, missä XXXX on järjestysnumero kiinteällä enimmäismäärällä
+etunollia, mikä määräytyy animaation sisältämien kuvien kokonaismäärän
+perusteella.</p>
+
+<p>Animaatiotiedoston saa näytettyä ruudulla animaationa yksinkertaisessa
+graafisessa käyttöliittymäikkunassa komennolla</p>
+
+<p><code>java anip animaatio.ap</code>,</p>
+
+<p>jossa <code>animaatio.ap</code> on toistettavan animaatiotiedoston nimi.
+</p>
+
+<p>Graafisessa animaationtoistotilassa käyttöliittymäikkunan koko on kiinteä
+ja riippuu animaation kuvakoosta, ja ikkunassa on muutama
+käyttöliittymäkomponentti.  Ensinnäkin on vaakasuuntainen liukusäädin, jolla
+voi siirtyä ajallisesti haluttuun kohtaan animaation toistamisessa, sekä
+toiseksi käynnistys-pysäytys -painike, joka vastavuoroin aloittaa ja lopettaa
+animaation toistamisen nykyisestä liukusäätimen osoittamasta kohdasta.</p>
+
+<p>Virhetilanteessa ohjelma tulostaa viestin komentoriville ja lopettaa
+suorituksensa.</p>
+
+<p>Huomautus: muita komentoja tai lisäkomentoja ei ole. Esimerkiksi
+animaation pakkausasetusten on tarkoitus olla sisäänrakennettuja vakioita
+ainakin toistaiseksi.</p>
+
+<h2>Tiedostot ja tiedostoformaatit</h2>
+
+<h3>Kuvatiedostot</h3>
+
+<p>Yksittäiset kuvatiedostot, joista animaatio koostuu, ovat yleisesti
+hyvin tunnetussa BMP-muodossa ja tarkemmin 24-bittisiä, pakkaamattomia
+bittikarttoja. Kuvien tiedostonimen pääte on <code>.bmp</code>.</p>
+
+<h4>BMP-tiedoston rakenne</h4>
+
+<p>Alun tunnistenumeroa lukuun ottamatta kaikki kokonaislukuarvot ovat
+little-endian -tavujärjestyksessä, siis vähiten merkitsevin tavu ensin.
+Kokonaislukuarvot ovat etumerkittömiä ellei toisin mainita.</p>
+
+<table>
+<tr>
+<td class="otsake">Osio</td>
+<td class="otsake">Koko/tavua</td>
+<td class="otsake">Informaatio tai tarkoitus</td>
+</tr>
+
+<tr>
+<td rowspan="4">Alkuosio<br />(BMP header)</td>
+<td>2</td>
+<td>BMP-tiedoston tunnistenumero: heksadesimaalina <code>42 4D</code>.</td>
+</tr>
+<tr>
+<td>4</td>
+<td>BMP-tiedoston koko tavuina</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Varattu. (Luettaessa ei käsitellä, <b>kirjoittaessa
+<code>00 00 00 00</code></b>).
+</td>
+</tr>
+<tr>
+<td>4</td><td>Osoite (tavua alusta), josta bittikarttadata löytyy</td>
+</tr>
+
+<tr>
+<td rowspan="11">Informaatio-osio<br />(DIB header)</td>
+<td>4</td>
+<td>Informaatio-osion koko (40 tavua)</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Kuvan leveys pikseleinä (etumerkillinen kokonaisluku)</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Kuvan korkeus pikseleinä (etumerkillinen kokonaisluku)</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Väritasojen lukumäärä. Oltava arvoltaan 1.</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Värikoodauksen laajuus bittiä per pikseli. Tässä ohjelmassa
+<b>oltava 24</b>.
+</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Pakkausmenetelmä. <b>Oltava 0</b>, mikä tarkoittaa "ei pakkausta".</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Kuvadata-osion koko</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Kuvan vaakaresoluutio. (Pikseliä metrille, etumerkillinen kokonaisluku)
+<b>Kirjoittaessa 2835</b>, mikä vastaa resoluutiota 72 DPI (pistettä tuumalle;
+melko yleisesti sopiva vakio).</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Kuvan pystyresoluutio. (Pikseliä metrille, etumerkillinen kokonaisluku)
+<b>Kirjoittaessa 2835</b>, mikä vastaa resoluutiota 72 DPI (pistettä tuumalle;
+melko yleisesti sopiva vakio).</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Värien määrä paletissa. Luettaessa ei käsitellä, <b>kirjoittaessa 0</b>.
+</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Tärkeiden värien määrä, tai 0, kun jokainen väri on tärkeä.
+Luettaessa ei käsitellä, <b>kirjoittaessa 0</b>.</td>
+</tr>
+
+<tr>
+<td>Kuvadata</td>
+<td>n</td>
+<td>
+Varsinainen kuva pikseli kerrallaan vaakariveittäin vasemmalta oikealle ja
+alhaalta ylös.<br />
+<br />
+Yhden pikselin väriarvo on kolmen tavun ryhmä järjestyksessä BGR,
+jossa B, G ja R tarkoittavat vastaavasti sinisen, vihreän ja punaisen
+komponentin voimakkuutta kukin arvolla väliltä 0-255.<br />
+<br />
+Jokaista vaakariviä kohti tiedostossa täytyy olla neljällä jaollinen määrä
+tavuja. Käytännössä jokaisen vaakarivin pikselidatan jälkeen lisätään
+tarvittaessa yhdestä kolmeen tavua. Luettaessa ne ohitetaan, <b>kirjoittaessa
+arvoina 0</b>.</td>
+</tr>
+</table>
+
+<h3>Animaatiotiedostot</h3>
+
+<p>Animaatiotiedostojen nimen pääte on <code>.ap</code>, ja niiden rakenne
+on itse kehitetty.</p>
+
+<h4>AP-tiedoston rakenne</h4>
+
+<p>Kaikki lukuarvot ovat etumerkittömiä kokonaislukuja ellei ole toisin
+merkitty.</p>
+
+<table>
+<tr>
+<td class="otsake">Osio</td>
+<td class="otsake">Koko/tavua</td>
+<td class="otsake" colspan="2">Informaatio tai tarkoitus</td>
+</tr>
+
+<tr>
+<td rowspan="7">Alkuosio</td>
+<td>4</td>
+<td colspan="2">AP-tiedoston tunnistenumero: heksadesimaalina
+<code>41 4E 49 50</code>, jota vastaa ASCII-teksti "<code>ANIP</code>".
+</td>
+</tr>
+<tr>
+<td>1</td>
+<td colspan="2">Tiedostorakenteen versio. Arvo = 1.</td>
+</tr>
+<tr>
+<td>4</td>
+<td colspan="2">Kuvien määrä</td>
+</tr>
+<tr>
+<td>4</td>
+<td colspan="2">Animaation nopeus kuvina sekunnissa (engl. FPS, frames per
+second). Liukuluku. Arvo on positiivinen.</td>
+</tr>
+<tr>
+<td>4</td>
+<td colspan="2">Avainkuvien (keyframes) lukumäärä</td>
+</tr>
+<tr>
+<td>2</td>
+<td colspan="2">Kuvan leveys pikseleinä</td>
+</tr>
+<tr>
+<td>2</td>
+<td colspan="2">Kuvan korkeus pikseleinä</td>
+</tr>
+
+<tr>
+<td colspan="4">&nbsp;</td>
+</tr>
+
+<tr>
+<td rowspan="8">Avainkuva</td>
+<td>1</td>
+<td colspan="2">Kuvan tyyppi. Arvo = 1, joka tarkoittaa avainkuvaa.</td>
+</tr>
+<tr>
+<td>4</td>
+<td colspan="2">Avainkuvan järjestysnumero. Ensimmäinen järjestysnumero on 0.
+</td>
+</tr>
+<tr>
+<td>4</td>
+<td colspan="2">Etäisyys edellisen avainkuvaosion alkuun tavuina.
+Etumerkillinen kokonaisluku. Kun tämän avainkuvan järjestysnumero on 0, on
+tämän etäisyyden arvo 0.</td>
+</tr>
+<tr>
+<td>4</td>
+<td colspan="2">Etäisyys seuraavan avainkuvaosion alkuun tavuina.
+Etumerkillinen kokonaisluku. Viimeisessä avainkuvan tämän etäisyyden
+arvo on 0.</td>
+</tr>
+<tr>
+<td>p<sub>i</sub></td>
+<td colspan="2">256 värin <i>kuvapaletti</i>, joka on pakattu.
+Värit esitetään järjestyksessä 0..255 seuraavanlaisissa pakkaussarjoissa.
+<br /><br />
+Ensin on tavu A. Jos tavun A arvo on 0-127, se tarkoittaa, että seuraavilla
+1..128 järjestysnumerolla tavun A arvoa vastaten on uusia värejä, joiden
+väriarvot tulevat seuraavaksi. Silloin tavua A seuraa (1..128)*3 tavua
+väriarvodataa muodossa RGB RGB RGB ..., eli 3 tavua per värikomponentti
+järjestyksessä punainen, vihreä, sininen.<br />
+<br />
+Jos tavun A arvo on 128-255, se tarkoittaa, että seuraavilla 1..128 indeksillä
+tavun A arvoa vastaten on vanhoja värejä, ts. värejä, jotka ovat samat kuin
+edellisessä paletissa vastaavilla järjestysnumeroilla.<br />
+</td>
+</tr>
+
+<tr>
+<td rowspan="3">n * m<sub>j</sub><br /><sub>j = 1..n</sub></td>
+<td colspan="2">Kuvadata jaettuna 8x8 pikselin lohkoihin. Lohkot kuvataan
+yksi kerrallaan. Lohkojen järjestys on vasemmalta oikealle riveittäin ja
+ylhäältä alas. Lohkon sisällä pikselit on kuvattu samaten vasemmalta oikealle
+riveittäin ja ylhäältä alas. Jos kuvan leveys tai korkeus ei ole jaollinen
+kahdeksalla, niin kuvan oikean reunan ja alareunan lohkoissa on tarvittava
+määrä täytepikseleitä. Täytepikselien väri on lohkon sisällä viimeksi käytetty
+väri (katso tarkemmin lohkon sisäinen pakkaus).
+<br />
+<br />Lohkot ovat pakattuja, ja niiden sisällä kuvadata on seuraavanlaista.
+Jokaisessa lohkossa on 16 värin <i>lohkopaletti</i>. Lohkon paletin värit
+koostuvat kuvapaletin väreistä, ja ne on valittu siten, että ne edustavat
+mahdollisimman hyvin lohkon pikselien alkuperäisiä väriarvoja 256 värin
+kuvapaletilla.</td>
+</tr>
+<tr>
+<td rowspan="2">m<sub>j</sub></td>
+<td>16 värin <i>lohkopaletti</i>, joka on pakattu. Ensin on 16 bittiä kahtena
+tavuna, jotka ilmaisevat, mitkä värit ovat erilaisia kuin edellisen lohkon
+paletissa.
+Esimerkiksi bittisarja <code>00011000&nbsp;00101001</code> tarkoittaa, että
+värit 3, 4, 10, 12 ja 15 ovat uusia. Näiden kahden bitin jälkeen on
+niin monta tavua kuin edellisessä kahdessa tavussa oli arvoltaan 1 olevia
+bittejä. Nämä tavut ovat kukin yksi 256 värin kuvapaletin väri, ja ovat
+siis tässä lohkossa uusia värejä.
+</td>
+
+</tr>
+<tr>
+<td>Lohkon pikselit. Oletuksena pakattua dataa, joka on koodattu näin:
+4 bittiä = väri, 4 bittiä = ohjausarvo. Ohjausarvo: 1-15 = toistetaan
+pikseliä em. värillä 1-15 kpl. Ohjausarvo 0: tätä pikseliä on vain yksi
+kappale, ja seuraavaksi on pakkaamatonta dataa.<br />
+<br />
+Pakkaamaton data on tavuittain ja vakio 4 bittiä yhtä pikseliä kohti.
+Ensin tulee yksi tavu, jonka arvo väliltä 1-64 kertoo, kuinka monta
+pikseliä pakkaamatonta dataa seuraa. Jos pakkaamattomien pikselien
+määrä ei ole kahdella jaollinen, niin viimeisen tavun viimeiset neljä
+bittiä jäävät ylimääräisiksi. Ne jätetään käsittelemättä luettaessa ja
+merkitään nolliksi kirjoittaessa.</td>
+</tr>
+
+<tr>
+<td colspan="4">&nbsp;</td>
+</tr>
+
+<tr>
+<td rowspan="3">Jatkokuva</td>
+<td>1</td>
+<td colspan="2">Kuvan tyyppi. Arvo = 0, joka tarkoittaa jatkokuvaa.</td>
+</tr>
+<tr>
+<td>p<sub>i</sub></td>
+<td colspan="2">256 värin kuvapaletti kuten avainkuvassa.</td>
+</tr>
+<tr>
+<td>m<sub>i</sub></td>
+<td colspan="2">Kuvadata 8x8 pikselin lohkoina kuten avainkuvassa, paitsi että
+vain edelliseen kuvaan verrattuna muuttuvat lohkot tallennetaan, mikä
+on koodattu seuraavasti.<br />
+<br />
+Ensin on tavu A. Jos A:n arvo on 0..127, on seuraavaksi 1-128 edelliseen
+kuvaan verrattuna samana pysyvää lohkoa, joiden kuvadataa ei merkitä,
+vaan seuraa seuraava tavu A. Jos A:n arvo on 128-255, on
+seuraavaksi 1-128 edelliseen kuvaan verrattuna uutta lohkoa, joiden
+data tulee seuraavaksi, ja sitten vasta seuraava tavu A.
+</td>
+</tr>
+</table>
+
+<p>AP-tiedostossa tulee ensin alkuosio, jonka jälkeen on avainkuvaosioita.
+Jokaisen avainkuvaosion jälkeen voi olla jatkokuvaosioita. Avainkuvaan on
+tallennettu koko kuva, jatkokuvaan vain muuttuvat kohdat suhteessa
+edelliseen kuvaan, joka voi olla jatkokuva tai avainkuva.</p>
+
+<h2><a name="jarjestelmatestaus">
+Järjestelmätestaussuunnitelma</a></h2>
+
+<p>
+Ohjelman toiminnallisuudet toteutetaan ja testataan seuraavissa osissa.
+</p>
+
+<ol>
+<li>BMP-tiedostojen lukeminen ja kirjoittaminen. Ennen kirjoitusrutiinia
+lienee hyvä yrittää saada luetun BMP-tiedoston kuvasisältö ruudulle,
+koska pelkän lukurutiinin testaaminen kirjoittamalla tiedosto uudelleen
+rutiinien avulla voi johtaa datan kopioimiseen, mikä ei testaa riittävästi.
+</li>
+
+<li>256 värin paletin muodostaminen BMP-kuvan pohjalta. Paletin
+värivalikoiman tulee edustaa "hyvin" alkuperäistä 24-bittisen kuvan
+värijakaumaa. Paletinmuodostusrutiinin tulee siis olla sellainen, että
+koko palettia ei uhrata kahden sävyn väliseen väriliukuun, vaan myös
+vähälukuisemmat, väriarvoiltaan yleisimmistä kuvan sävyvariaatioista
+poikkeavat pikselit tulevat edustetuksi riittävän runsaana, toisin
+sanoen eivät pelkisty kaikki yhdeksi sävyksi.<br />
+&nbsp;&nbsp;Käytännössä luetaan BMP, muodostetaan paletti ja sovelletaan
+sitä, kirjoitetaan BMP (kuitenkin 24-bittisenä), ja tarkistetaan
+tuloksen kelvollisuus avaamalla saatu BMP jossain kuvankäsittelyohjelmassa
+verraten sitä alkuperäiseen.</li>
+
+<li>Kuvan jakaminen pakatessa 8x8 pikselin lohkoihin ja lohkokohtaisten
+16&nbsp;värin palettien muodostaminen. Reunalohkojen käsittely silloin, kun
+kuvan leveys tai korkeus ei ole kahdeksalla jaollinen. Osittain samoja ehtoja
+kuin 256 värin paletin muodostamisrutiinissa, tosin ei ole vielä selvää,
+käytetäänkö täsmälleen samaa rutiinia. Värejä on toisaalta 16 kertaa vähemmän,
+mutta lohkoja tyypillisessä SVGA-resoluutioisessa kuvassa (esim. 720x576)
+on tuhansia, joten jokaiselle lohkolle erikseen tehtävä paletinmuodostus
+ei saa olla laskennallisesti kovin vaativa, vaikka tehtävänannossa
+todetaankin, ettei pakkausrutiinin kokonaisnopeudella ole juurikaan
+merkitystä. Testaus kuten edellisessä kohdassa.</li>
+
+<li>Muuttuvien alueiden erottaminen muuttumattomista 8x8-lohkoina
+peräkkäisissä kuvissa. Huomautus:
+Kun määritellään, mitkä lohkot muuttuvat, on verrattava
+pakkaamatonta 24-bittistä kuvadataa, sillä sijainniltaan täsmälleen saman
+24-bittisen lohkon pikselit saattavat kahdessa peräkkäisessä kuvassa
+kuvautua hieman eri väriarvoille 4-bittisessä paletissa. Tämä johtuu
+tietysti lohkon ulkopuolisten pikselien muutoksesta kuvien välillä,
+minkä seurauksena kuvien paleteista voi tulla erilaiset ja edelleen
+saman lohkon paletista voi tulla erilainen eri kuvissa.<br />
+&nbsp;&nbsp;Testaus: muodostetaan lähdekuvan kokoinen testikuva, jossa
+on 1 pikselin hiusruudukko joka 8. pikselillä vaaka- ja pystysuunnassa
+merkitsemässä 8x8-lohkojen reunoja, ja väritetään lohkot tummanharmaiksi
+tai valkoisiksi sen mukaan, muuttuvatko ne. Toinen vaihtoehto olisi
+piirtää vierekkäin animaatio kuva kuvalta sekä harmaata, kuvan
+kokoista taustaa vasten vain kunkin kuvan muuttuvat lohkot oikeilla
+kohdillaan.</li>
+
+<li>256 värin kuvapaletin pakkaaminen ja purkaminen. (Verrataan ensin
+pakattua ja sitten purettua tietoa alkuperäiseen, ts. testataan
+algoritmin symmetrisyyttä.)</li>
+<li>16 värin lohkopaletin pakkaaminen ja purkaminen. (Testataan
+algoritmin symmetrisyys kuten edellä.)</li>
+<li>Lohkon pikselien pakkaaminen ja purkaminen. (Testataan algoritmin
+symmetrisyys kuten edellä.)</li>
+<li>Alueiden muuttuvuustiedon pakkaaminen ja purkaminen. (Testataan
+algoritmin symmetrisyys kuten edellä.)</li>
+
+<li>Animaatiotiedoston kirjoittaminen. Tutkitaan tiedoston sisältöä
+jonkin verran heksaeditorilla ja verrataan sitä tiedoston
+rakennemääritelmään. Lisää testausta seuraavassa kohdassa.</li>
+
+<li>Animaatiotiedoston sisällön toistamien ruudulla.</li>
+
+<li>Animaatiotiedoston kirjoittaminen kuvatiedostoiksi. Edellisen
+kohdan jäljiltä vain vähän testattavaa, kun kuvan muodostaminen ja
+BMP-tiedoston kirjoittaminen on jo toteutettu ja testattu.</li>
+
+<li>Graafinen käyttöliittymä animaatiotiedoston sisältöä toistettaessa.
+Käyttöliittymän ohjauskomponenttien toiminnallisuuden testaaminen.</li>
+</ol>
+
+<p>Ohjelman pitää tarkistaa seuraavat ehdot ja käsitellä niiden
+täyttymättä jättäminen lopettamalla toiminnan asianmukaisen virheilmoituksen
+kera.</p>
+<ul>
+<li>Pakatessa animaatiota kaikkien lähdekuvien tulee olla samankokoisia
+leveydeltään ja korkeudeltaan.</li>
+<li>Tiedostoista lukemisen ja niihen kirjoittamisen pitää onnistua.</li>
+</ul>
+
+<p><a name="lisays1">
+<b>Lisäys 11.10.2008:</b></a> Tietenkin kaikkien ohjelman toimintojen
+valmistuttua sitä on tarkoitus testata kuvasarjoilla, jotka on tehty
+erityyppisten videomateriaalien pohjalta. Testimateriaali voisi olla
+niin videokuvaa oikeasta luonnosta kuin myös piirrettyä 2D-animaatiota,
+kenties jopa 3D-mallinnettua animaatiota lisäksi. Videopätkissä on
+oltava kohtia, joissa tulee erikokoisia muutoksia eripituisilla ajanjaksoilla,
+jotta voidaan tutkia, miten äkillisten muutosten paljous vaikuttaa
+kuvanlaatuun hetkellisesti.</p>
+
+ <hr />
+<p>7.10.2008 <a href="mailto:atilante nospam+at cc dot hut dot fi">Artturi
+Tilanterä</a></p>
+
+</body>
+</html>

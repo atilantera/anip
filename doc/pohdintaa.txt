@@ -1,0 +1,7 @@
+-v‰likuvissa voisi laadun takia olla ihan suoraan 256 v‰rin paletti, voisiko?
+Edellisen kuvan palettia ei kannata kierr‰tt‰‰. Vai kannattaisiko? V‰hent‰isi
+v‰rien vilkkumista. Kinkkist‰ :)
+
+Lohkopaletin tallentaminen:
+1 bitti = 8 alempaa v‰ri‰, sitten niiden tavut
+1 bitti = 8 ylemp‰‰ v‰ri‰ -"-

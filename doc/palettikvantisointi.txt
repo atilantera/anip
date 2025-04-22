@@ -1,0 +1,27 @@
+Ongelmia palettikvantisoinnissa:
+
+Median cut
+----------
+
+
+
+Octree
+------
+
+-Jos oikeasti tallennetaan jokaikinen v‰riarvo puuhun ennen kuin sit‰
+l‰hdet‰‰n pienent‰m‰‰n, miten tehd‰ se (l‰hes) optimaalisesti?
+
+-K‰yd‰‰n puu l‰pi esi-/sis‰-/j‰lkij‰rjestyksess‰ (tasoj‰rjestys paras),
+ja j‰rjestet‰‰n solmut arvojensa mukaan. Sitten l‰hdet‰‰n sulauttamaan...
+ei.
+-On parasta ottaa talteen puun tasoj‰rjestys, ja sen j‰lkeen... ei.
+
+Ei ongelmaa: jokin tietty v‰riarvo menee puun alimpaan haaraan (no aina
+menee), ja sit‰ on enemm‰n kuin yl‰puolella olevia.
+
+Puiden solmujen yhdist‰minen: b on a:n lapsi, joka sulautetaan a:han.
+a.r += b.r;
+a.g += b.g;
+a.b += b.b;
+a.kpl += b.kpl;
+

@@ -1,0 +1,14 @@
+Eräällä piirretyllä testikuvalla:
+
+-rw-r--r-- 1 alkim alkim 327078 18.10. 15:32 testi01.bmp
+-rw-r--r-- 1 alkim alkim 268498 18.10. 15:47 testi02.bmp
+-rw-r--r-- 1 alkim alkim 124868 18.10. 15:50 testi03.bmp
+-rw-r--r-- 1 alkim alkim 375616 18.10. 15:27 testi_alkup.jpg
+
+testi01.bmp: 8-bittinen paletti, rle-pakattu
+testi02.bmp: suurten, väriltään yhtenäisten alueiden värimäärä laskettu 16:een
+testi03.bmp: 4-bittinen paletti, rle-pakattu
+
+8x8 lohkoissa värien rajoittaminen johtaisi siis 10-20% säästöön.
+Liikaa ei kannata laskea sen varaan. Pitäisikö käyttää suurempia lohkoja,
+kuten 16x16?

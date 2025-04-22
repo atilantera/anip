@@ -1,0 +1,65 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #ffffff;
+    color: #000000
+}
+:link:active, :visited:active {
+    color: #ff0000;
+}
+:link {
+    color: #0000ff;
+}
+:visited {
+    color: #800080;
+}
+h1, h2, h3, h4 {
+    margin-left: 0em;
+}
+h2 {
+    margin-top: 2.5em;
+    margin-bottom: 1em
+}
+h3, h4 {
+    margin-top: 2em;
+    margin-bottom: 1em
+}
+p {
+    line-height: 1.25em;
+}
+li {
+    padding-top: 0.25em;
+    padding-bottom: 0.25em;
+}
+table {
+border: outset 1pt;
+    border-collapse: collapse;
+}
+th, td {
+    border: inset 1pt;
+    padding: 2pt
+}
+td.otsake {
+    font-weight: bold
+}
+td.oiktasaus {
+    text-align: right
+}
+dd {
+    margin-left: 0em;
+    padding-top: 0.10em;
+    padding-bottom: 0.10em;
+}
+.lainaus {
+    font-style: italic;
+    margin-left: 3em
+}
+.sisennys {
+    margin-left: 3em
+}
+.kaava {
+    font-family: monospace;
+    white-space: nowrap;
+}
+.huomautus {
+    font-size: 75%
+}

@@ -12,6 +12,24 @@ an individual project work for an object-oriented programming course, when I
 was an undergraduate student at Helsinki University of Technology (now
 Aalto University).
 
+## Features
+
+- input as sequence of BMP files
+- split a frame into 8x8 pixel block
+- save cells if they change by a certain threshold compared to the same
+  cell in the previous frame
+- 8-bit palette per frame
+- 4-bit subpalette per 16x16 pixel block
+- run length encoding of 16x16 pixel blocks
+
+The practical compression ratio for cel animation is from 1:10 to 1:30. Compare
+to MPEG-2 on a DVD, which is around 1:40. However, the demo video `skewb.ap` is
+a real-life video with still camera and background, a moving hand and a
+geometrical object with flat shades, 400x300 pixels, 24 bits/pixel, 25 fps,
+20 seconds, total 20 MB. This yields a compression ratio of
+
+  400 * 300 * 24/8 * 25 * 20 / 20000000  ~= 9.3.
+
 ## Demo
 
 Download the source code and a Java runtime, e.g.
@@ -40,4 +58,13 @@ anip animation.ap
 
 ```
 
+## Source code
+
+In the [src](src/) subdirectory.
+
+## Documentation
+
+- [Javadoc](doc/dokumentaatio/javadoc/all/index.html)
+- [Final project documentation (Finnish)](doc/dokumentaatio/dokumentti.html)
+- [Project plan (in Finnish)](doc/suunnitelma/)
 

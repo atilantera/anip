@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fi" lang="fi">
+<head>
+<title>Animaatiotiedostojen pakkaaja - Lisähavainnollistus suunnitelmaan
+- Artturi Tilanterä
+</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="css/tyyli.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+
+<h1>Paletti- ja muutostiivistävä animaatiotiedostojen pakkaaja</h1>
+<h4>Projektityön suunnitelman liite suunnitelman demotilaisuutta
+varten. T-106.1240 Ohjelmoinnin jatkokurssi T1</h4>
+
+<h2>Videonpakkauksen pääperiaatteita havainnollistava kuvasarja</h2>
+
+<p>Kuvien lähteenä on piirrosanimoitu TV-sarja
+<a href="http://www.animenewsnetwork.com/encyclopedia/anime.php?id=6430">
+<i>The Melancholy of Haruhi Suzumiya</i></a>.
+Pakkausmenetelmän eri vaiheita on simuloitu karkeasti
+<a href="http://www.gimp.org">GIMP-kuvankäsittelyohjelmalla</a>,
+jonka toiminnoista on käytetty hyväksi muun muassa kuvatasojen
+erilaisuuden vertailua sekä indeksoidun paletin muodostamista;
+molemmat ovat kyseiseen ohjelmaan sisäänrakennettuja, ei itse tekemiäni.</p>
+
+<table>
+<tr>
+<td>1a. Edellinen kuva, pakkaamaton RGB 24 bittiä/pikseli</td>
+<td>1b. Nykyinen kuva, pakkaamaton RGB 24 bittiä/pikseli</td>
+</tr>
+<tr>
+<td><img src="kuvat/alkup-0.png" alt="Edellinen alkuperäinen
+24-bittinen kuva" /></td>
+<td><img src="kuvat/alkup-1.png" alt="Nykyinen alkuperäinen
+24-bittinen kuva" /></td>
+</tr>
+<tr>
+<td>2. Muuttuneet 8 x 8 pikselin lohkot<br />
+(ruudukko mustalla viivalla merkkaa lohkojen reunoja)</td>
+<td>3. Lohkoille muodostetaan ja sovitetaan yhteinen paletti<br />
+(tässä 60 väriä)</td>
+</tr>
+<tr>
+<td><img src="kuvat/muuttuneet_alueet.png"
+alt="Vain osia liikkuvasta piirroshahmosta muuttuu" /></td>
+<td><img src="kuvat/muuttuneet_60varia.png"
+alt="Rajatut värisävyt aiheuttavat rasteroitumista" /></td>
+</tr>
+<tr>
+<td>4. Värien määrää vähennetään lohkokohtaisesti tarvittaessa</td>
+<td></td>
+</tr>
+<tr>
+<td><img src="kuvat/lohkopaletti.png"
+alt="Sävyt vähenevät enemmän kuin yksityiskohdat" /></td>
+<td></td>
+</tr>
+<tr>
+<td>5. Pakattu edellinen kuva, indeksoitu 256 värin paletti</td>
+<td>6. Pakattu edellinen kuva + <br />nykyisen muuttuneet alueet pakattuina.
+</td>
+</tr>
+<tr>
+<td><img src="kuvat/pakattu-0.png"
+alt="Rajattu väripaletti aiheuttaa raidoittumista tasaisilla alueilla" /></td>
+<td><img src="kuvat/pakattu-1.png"
+alt="Vain todella muuttuvat kohdat muuttuneet" /></td>
+</tr>
+</table>
+
+<p class="huomautus">The Melancholy of Haruhi
+Suzumiya &copy; 2006-2007 Nagaru Tanigawa / Noizi Ito / member of SOS</p>
+
+ <hr />
+<p>17.10.2008 <a href="mailto:atilante nospam+at cc dot hut dot fi">Artturi
+Tilanterä</a></p>
+
+</body>
+</html>

@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fi" lang="fi">
+<head>
+<title>Animaatiotiedostojen pakkaaja - Lisähavainnollistus dokumentaatioon 
+- Artturi Tilanterä
+</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="css/tyyli.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+
+<h1>Paletti- ja muutostiivistävä animaatiotiedostojen pakkaaja</h1>
+
+<h2>Dokumentaatioliite: Videonpakkauksen näkyviä pääperiaatteita havainnollistava kuvasarja</h2>
+
+<p>Tämä dokumentaation liite havainnollistaa videonpakkauksen
+silmin nähtäviä, osin häviöllisiä vaiheita, joissa liikkuvaa kuvaa
+pakataan tunnistamalla muutoksia ja vähentämällä väri-informaatiota
+kuvissa ja niiden osa-alueissa.</p>
+
+<table>
+
+<tr>
+<td colspan="2"><a name="testikuvat">1 Kaksi testikuvaa, jotka esittävät
+kahta peräkkäistä, erilaista kuvaa animaatiossa.</a></td>
+</tr>
+
+<tr>
+<td>
+1.1 Edellinen kuva, pakkaamaton RGB 24 bittiä/pikseli</td>
+<td>1.2 Nykyinen kuva, pakkaamaton RGB 24 bittiä/pikseli</td>
+</tr>
+
+<tr>
+<td><img src="kuvat/alkup-0.png" alt="Edellinen alkuperäinen
+24-bittinen kuva" /></td>
+<td><img src="kuvat/alkup-1.png" alt="Nykyinen alkuperäinen
+24-bittinen kuva" /></td>
+</tr>
+
+
+<tr>
+<td colspan="2"><a name="muuttuneet_lohkot">
+2 Muuttuneet 8 x 8 pikselin lohkot.</a></td>
+</tr>
+
+<tr>
+<td colspan="2">2.1 Muuttuneet lohkot, kun muuttuvuusperuste on jonkin
+lohkon pikselin värimuutoksen pituus RGB-avaruudessa minimiarvolla 8.
+Kuvaan valikoituu melko tarkasti ne alueet, joiden muutoksen huomaa
+paljaalla silmällä. Osa poskea ja paitaa todella sattuvat pysymään
+samanvärisinä. Pään ympärillä on taustaa mukana hiusten heilahtamisen
+takia.</td>
+</tr>
+
+<tr>
+<td><img src="kuvat/muutos-rgb-etaisyys-8.png" alt="Muuttuneet lohkot
+RGB-etäisyydellä 8" /></td>
+<td><img src="kuvat/muutos-rgb-etaisyys-8-kuvassa.png"
+alt="Muuttuneet lohkot RGB-etäisyydellä 8 edellisen kuvan päällä" /></td>
+</tr>
+
+<tr>
+<td colspan="2">2.2 Muuttuneet lohkot RGB-minimietäisyydellä 16.
+Nyt valkoinen muki on riittävän samanvärinen kuin valkoinen tausta, kun
+se osuu samalle kohtaa. Sen sijaan hiuksissa on havaittavissa pientä
+palikoitumista, kun jotkin lohkot eivät muutu.</td> 
+</tr>
+
+<tr>
+<td><img src="kuvat/muutos-rgb-etaisyys-16.png" alt="Muuttuneet lohkot
+RGB-etäisyydellä 16" /></td>
+<td><img src="kuvat/muutos-rgb-etaisyys-16-kuvassa.png"
+alt="Muuttuneet lohkot RGB-etäisyydellä 16 edellisen kuvan päällä" /></td>
+</tr>
+
+<tr>
+<td colspan="2">2.3 Muuttuneet lohkot RGB-minimietäisyydellä 24.
+Palikoituminen korostuu hiuksissa. Erityisen huomattavaa on, että
+häiritsevä palikoituminen näyttää kasvavan nopeammin kuin muuttuvien
+lohkojen määrä vähenee; etäisyydellä 24 on jo silmäänpistäviä häiriöitä,
+mutta lohkojen määrä ei vähene mitenkään olennaisesti, mikä olisi hyvä
+asia pakkauksen kannalta.</td> 
+</tr>
+
+<tr>
+<td><img src="kuvat/muutos-rgb-etaisyys-24.png" alt="Muuttuneet lohkot
+RGB-etäisyydellä 24" /></td>
+<td><img src="kuvat/muutos-rgb-etaisyys-24-kuvassa.png"
+alt="Muuttuneet lohkot RGB-etäisyydellä 24 edellisen kuvan päällä" /></td>
+</tr>
+
+<tr>
+<td colspan="2"><a name="kuvapaletti">
+3 Koko kuvalle yhteinen väripaletti.</a></td>
+</tr>
+
+<tr>
+<td>3.1 Kuva, jolle on muodostettu optimaalinen 256 värin paletti
+median cut -menetelmällä, ja sen jälkeen sovitettu paletti käyttämällä
+perusteena kuvan ja paletin väriarvojen pienintä etäisyyttä
+RGB-avaruudessa. Kuvasta voi havaita, että tasaisissa väriliu'uissa kuten
+hiuksien takaosassa ja vihreässä penkissä näkyy raidoittumista värien
+vaihtuessa portaittain aina sopivimmalle paletin värille.</td>
+<td><a name="kuva_paletista">
+3.2 Paletin 256 väriä 16x16 ruudun ruudukkona.</a></td>
+</tr>
+
+<tr>
+<td><img src="kuvat/kuva_paletilla.png" alt="256 värin kuva" /></td>
+<td><img src="kuvat/kuvan_paletti.png" alt="256 värin paletti esitettynä
+kuvana" /></td>
+</tr>
+
+<tr>
+<td><a name="octree"></a>
+3.3 Kokeilu: Kuva, jolle on luotu väripaletti kuten kuvassa 3.1
+median cut -menetelmällä, mutta paletin värit on sovitettu kuvaan käyttäen
+octree-hakupuuta. Octree-sovitus on olennaisesti lähimmän RGB-naapurin
+lineaarista etsimistä laskennallisesti kevyempi. Tulos on kokonaisuudessan
+ala-arvoinen, vaikka octree-sovituskin selvästi toimii: värisävyt ovat
+useimmiten melko lähellä parasta vaihtoehtoa, mutta eivät silti riittävän
+lähellä.</td>
+<td></td>
+</tr>
+
+<tr>
+<td><img src="kuvat/octree.png" alt="256 värin kuva octree-sovituksella" />
+</td>
+<td></td>
+</tr>
+
+<tr>
+<td colspan="2"><a name="lohkopaletit">4 Kaksi peräkkäistä kuvaa pakattuna
+vähentäen väri-informaatiota kuvan osa-alueissa.</a> Kuvat 4.1 ja 4.2
+esittävät jo periaatteessa täydellisesti videonpakkaajalla pakattua ja
+purettua kuvasignaalia sellaisena kuin se lopulta näkyy.</td>
+</tr>
+
+<tr>
+<td>4.1 Edellinen kuva, jossa 256 värin paletin jälkeen on
+16&nbsp;x&nbsp;16 pikselin alueille, "päälohkoille", luotu lohkokohtainen
+paikallinen 16 värin paletti. Lohkopalettien luomisessa on jälleen käytetty
+median cut -menetelmää.</td>
+
+<td>4.2 Nykyinen kuva purettuna pakatusta videosta. Tässä on luotu
+päälohkoille 16 värin paletit kuten 4.1:ssä, ja tallennettu videotiedostoon
+vain muuttuvat 8&nbsp;x;nbsp;8 pikselin lohkot. Videota purkauessa
+vastaavat lohkot on sitten piirretty 4.1:ssä olevan kuvan päälle.</td>
+</tr>
+
+<tr>
+<td><img src="kuvat/palettipakkaus+muutokset-0.png" alt="256 värin kuva,
+jossa värien määrää myös lohkojen sisällä on rajoitettu median
+cut -menetelmällä" /></td>
+<td><img src="kuvat/palettipakkaus+muutokset-1.png" alt="256 värin kuva,
+jossa värien määrää myös lohkojen sisällä on rajoitettu median
+cut -menetelmällä, ja tallennettu vain muuttuvat lohkot edelliseen
+kuvaan nähden" /></td>
+</tr>
+
+</table>
+
+<p class="huomautus">Kuvien lähde: The Melancholy of Haruhi
+Suzumiya &copy; 2006-2007 Nagaru Tanigawa / Noizi Ito / member of SOS</p>
+
+ <hr />
+<p>30.11.2008 <a href="mailto:atilante nospam+at cc dot hut dot fi">Artturi
+Tilanterä</a></p>
+
+</body>
+</html>

@@ -1,0 +1,312 @@
+Animaationpakkaus: pakkausmenettely, joka tallentaa tarkasti
+yksityiskohtia, mutta karkeasti värisiirtymät. Toimii parhaiten
+piirrosanimaatiolle, jossa on tasaisia väripohjia ja yksivärisiä,
+teräviä viivoja.
+
+Kuvaava nimi: palettikvantisoiva, piirrosanimaatiolle optimoitu,
+yksityiskohdat säilyttävä videonpakkaaja.
+
+PÄÄPERIAATE: jaetaan kuva 8x8 pikselin lohkoihin. Jokaisesta lohkosta
+tallennetaan taustaväri sekä tarvittaessa pikseleitä, jota eroavat
+merkittävästi taustaväristä. Tällainen menettely vastaa tilannetta
+kaksiulotteisessa piirrosanimaatiossa, joka koostuu suurimmaksi
+osaksi yksivärisistä, ohuista viivoista, joissa saattaa olla paikoittain
+pieniä yksityiskohtia, sekä toisaalta tasaisen yksivärisistä alueista
+viivojen välissä.
+
+Lisäksi videokuvan edetessä pyritään tallentamaan vain merkittävästi
+muuttuvat lohkot.
+
+Kuvainformaation pakkaus perustuu ajatukseen, että kuvassa on
+melko rajattu määrä hallitsevia värejä: yksi tumma viivan väri sekä
+joitakin kymmeniä, korkeintaan satoja värejä, joita tasaisesti
+väritetyissä alueissa esiintyy. Näin ollen kuvasta pystytään
+muodostamaan väripaletti, joka kattaa riittävän hyvin suurimman osan
+kuvan pikselien väriarvoista.
+ Yleisesti ottaen 24-bittisen väriarvon kuvaaminen vaikkapa 8-bittiselle
+paletille pakkaa informaatiota häviöllisesti melko hyvin. Edelleen,
+mitä vähemmän paletissa on värejä, sen helpompaa jäljellä oleva
+väri-informaatio on pakata häviöttömästi esimerkiksi RLE- tai
+Huffman-koodauksella.
+ 8x8 pikselin lohkot auttavat pakkaamisessa edelleen siten, että
+näin pienessä lohkossa voidaan olettaa olevan keskimäärin vähemmän
+erilaisia värimuutoksia kuin suuremmassa alueessa tai peräti koko
+kuvassa. Näin ollen yhdessä lohkossa käytettävien värien määrä on
+vain murto-osa koko kuvan yhteisen väripaletin koosta, joten lohkon
+sisällä värien erotteluun tarvitaan hyvin vähän informaatiota:
+käytännössä muutaman bitin paletti riittää. Muutenkin, koska
+lohkossa on vain 64 pikseliä, taustaväristä poikkeavien pikselien
+paikkatietojenkin tallentaminen vie hyvin vähän tilaa verrattuna
+koko kuvaan jo riippumatta lohkonsisäisestä pakkausmenetelmästä.
+
+Tarkempi toiminta:
+
+-lähdekuvat ovat 24-bittisiä rgb-bittikarttoja
+
+-jaa kuva 8x8 pikselin lohkoihin
+
+Tavoitteet: perustaso kuin kuvan muuttaminen 16-256-väriseksi
+GIF-kuvaksi, josta tallennetaan liikkeessä vain muuttuvat 8x8
+pikselin palikat.
+Parannuksia: Värimäärän laskeminen ei rumenna
+
+- paletin kvantisointi melko haastava operaatio. Väripallot-mekanismi?
+- Entä paletin muutokset freimien välillä?
+
+Versio 1.0
+Lokaiselle lohkolle:
+- etsi taustaväri: muodosta 16 värin paletti lohkon pikselien
+  väriarvoista ja valitse yleisin väri
+- taustavärit lohkoille yhteisiä, 256 erilaista
+- näin pakataan kuva suhteessa 192:1
+- lohkoista muodostuva 8-bittinen bittikartta voidaan edelleen
+pakata RLE- tai Huffman-koodauksella.
+(Huomautus: RLE-pakkaus on kätevä vain, jos värejä on muutama
+kymmenen. Kyse on kuitenkin keyframen pakkaamisesta; keyframen
+jälkeen tulevista frameista tallennetaan vain ne lohkot, jotka
+muuttuvat (riittävästi))
+
+- Tai jos jokaiselle lohkolle on vakio 3 tavua käytetty taustaväriä
+varten, niin pakkaussuhde on enintään 1:64.
+
+Versio 1.1
+Miten 8x8-lohkojen sisälle saisi tarvittaessa yksityiskohtia
+pakattuna?
+- Jokaisella lohkolla max 15 värin paletti taustavärin lisäksi.
+  - paletin muodostus?
+  - paletin soveltaminen: lähin vastaava väri paletista
+  - pakkaus: RLE: yksi RLE-jakso = 1 tavu: 4 bittiä = väri,
+    toiset 4 bittiä = pituus (väri: 0-14 = lohkon paletti, 15 =
+    taustaväri), pituus 1-16 pikseliä
+    (olisiko parempi värille 5 bittiä ja pituudelle 3? Tai
+    valinta tarpeen mukaan?)
+- Tilankäyttö: taustaväri 1 tavu, paletti 0-15 tavua,
+  kuvadata pahimmillaan 64 tavua
+
+-Väliframejen muuttuvat lohkot: miten merkitään pakatusti?
+-RLE?
+-Pyritään etsimään alueita, joiden sisällä yli puolet lohkoista
+muuttuu?
+-Pyritään etsimään suorakulmion muotoisia alueita, joiden sisällä
+kaikki lohkot muuttuvat? + yli jäävät osat RLE:llä
+ ->Ei toimi kovin paljon tehokkaammin kuin RLE, ellei hyvin monia
+   kapeita ja korkeita, pelkästään muuttuvia lohkoja käsittäviä
+   suorakulmaisia alueita.
+   
+- Pakkaamattoman ja RLE-pakatun vaihteludatan vuorottelu.
+  Jokaista 8x8 pikselin lohkoa kohden on siis yksi bitti tietoa:
+  muuttuuko lohkon sisältö tässä framessa.
+  - 8x8 lohkojen muutosdata muodostaa 1-bittisen bittikartan, jonka
+    leveys ja korkeus ovat kahdeksasosa framen bittikartan leveydestä
+    ja korkeudesta (pyöristettyinä ylöspäin).
+    Bittikartta käydään läpi vasemmalta oikealle ja ylhäältä alas
+    rivi kerrallaan.
+  - Merkintä: ensin tavu A, jonka arvo merkitsee:
+    0 < A < 127: Seuraavaksi (A+1) tavua pakkaamatonta muutosdataa:
+   Yhdessä tavussa on kahdeksan seuraavan 8x8-lohkon muuttuvuustiedot
+   peräkkäin: yksi bitti jokaista lohkoa kohti (muuttuuko lohko vai ei)
+   128 < A < 256: Seuraavaksi (A-128) tavua pakattua muutosdataa:
+   tavun eniten merkitsevin bitti kertoo, merkitäänkö seuraavaksi
+   sarja muuttuvia (arvo=1) vai muuttumattomia (arvo=0) tavuja,
+   ja muiden bittien muodostama arvo väliltä 0-127 kertoo, kuinka
+   monta samanarvoista bittiä seuraavaksi tulee (1-128 kpl).
+  - Tilanvienti: Pahimmassa tapauksessa joka toinen lohko muuttuu,
+  jolloin RLE-pakkaus on hyödytön. 720x480 pikselin resoluutiolla
+  8x8 -lohkoja on 96*60 = 5400 (bittiä) = 675 tavua / frame, mikä on
+  1:1536 pakkaamattomasta pikselidatasta.
+   
+- Kaksoislohkotusversio: 8x8 pikselin lohkot jaetaan 8x8 lohkon
+"isoihin" ryhmiin.
+  - Isoja ryhmiä tulee tällöin 1 kpl jokaista 64x64 pikselin aluetta
+  kohden. Resoluutiolle 720x480 pikseliä tarvitaan tällöin 96
+  lohkoa. (isojen lohkojen määrä pysty- ja vaakasuunnassa pyöristetty
+  ylöspäin). Isojen lohkojen muuttuminen/muuttumattomuus koodataan
+  pakkaamattomasti, 1 bitti per iso lohko. Tieto 96 ison lohkon
+  muuttuvuudesta veisi siis aina vakiotilan 96/8 = 12 tavua / frame.
+  - Jokaista muuttuvaa isoa lohkoa kohden tulee vakiomäärä 8 tavua,
+  jotka sisältävät pakkaamattomana tiedon siitä, mitkä ison lohkon
+  sisältämät 8x8 pikselin lohkot muuttuvat ja mitkä eivät.
+  - Tilanvienti: Pahimmassa tapauksessa jokainen iso lohko sisältää
+  muuttuvia 8x8 pikselin lohkoja. Näin käy, kun jokainen iso lohko
+  sisältää vähintään yhden 8x8 pikselin lohkon, joka muuttuu, siis
+  oikeastaan aika usein.
+  
+- Entä pakatun datan purkaminen tehokkaasti?
+  Tavoitteena onkin, että DVD-resoluutioinen (720x576) kuva
+  25 fps toistuu nykimättä normaalilla, kuluttajakäyttöön saatavalla
+  yksiydinprosessorisella noin 1 GHz koneella. Ohjelmahan on tosiaan
+  Java-pohjainen. Purkaminen siis saisi olla mieluusti selvästi
+  kevyempää verrattuna MPEG2:n purkamiseen. Riemu kattoon, jos se
+  toimii vanhalla Pentium2 350 MHz koneellakin.
+
+- 256 värin kuvapaletti pitää yrittää pakata seuraavalla perusteella.
+Jos oletetaan, että anip:n pakkaussuhde lähentelee MPEG2:sta, niin 25 FPS:llä
+jokaisessa framessa olevat 768-tavuiset paletit vievät puolessatoista
+tunnissa jo 768 * 25 * 60 * 60 * 1,5 = 103 680 000 ~ 100 Mt, mikä on
+100 / 4700 =~ 2 % DVD-levyn tilasta. MPEG4:llä vastaavasti
+100 / 650 =~ 15 % CD-levyn tilasta, mikä ainakin on aivan liikaa.
+  Vastaperuste: kun kuvakohtaisessa palettikvantisoinnissa 2^24 väriä
+kuvataan 2^8 värille mahdollisimman tarkasti ja edustavasti, niin jopa
+kahden kohtalaisen samanlaisen (jatko)kuvan välillä paletit todennäköisesti
+kvantisoituisivat niin, että suurin osa (> 80%) väreistä on erilaisia, jolloin
+tiivistyshyöty ei ole merkittävä.
+  Sen sijaan jos uusia värejä kuvien välisissä paleteissa esiintyisi
+keskimäärin 64 kpl, siis 1/4 paletin koosta, tiivistäminen olisi perusteltua.
+  Miten on? Tilanteessa, jossa paletit eivät tiivisty lainkaan, mutta
+tiivistyskoodaus on silti käytössä, tulisi jokaista kuvapalettia kohti
+vakio kaksi tavua tiivistysdataa. Tämä lisäys olisi 2 / 768 =~ 0,3 %,
+joka 100 Mt palettidatassa tarkoittaisi datan kasvamista 100,3 Mt:uun,
+siis ei mitenkään merkittävää. Voidaan siis päätellä, että kuvapaletin
+pakkaamista vain muutokset tallentaen voidaan kokeilla, sillä pakkaus-
+metadatan lisääminen ei kasvata merkittävästi datan määrää.
+  Kuvapaletti siis pakataan seuraavasti.
+  Tavu A, tavut CCCCCC...
+  Tavu A: Jos arvo 0-127, seuraavaksi on 1-128 tavua uusia värejä.
+          Uudet värit ovat tavuissa CCCCCC... järjestyksessä RGB RGB..
+		  Jos arvo 128-255, seuraavaksi on 1-128 vanhoja värejä.
+		  Silloin ei ole yhtään tavuja CCCCCC...
+Arvioidaan pahinta mahdollista tapausta.
+Tapaus 1: Joka toinen väri uusi ja joka toinen vanha.
+ Palettidatan koko = 128 * (1 + 3 + 1) = 128 * 5 = 640 = 83% uudesta pal:sta.
+Tapaus 2: Aina kolme väriä uutta, välissä yksi vanha.
+ Datan koko = 64 * (1 + 9 + 1) = 704 = 91% uudesta paletista.
+Tapaus 3: Aina 7 väriä uutta, välissä yksi vanha.
+ Datan koko = 32 * (1 + 21 + 1) = 736 = 96% uudesta paletista.
+Nähdään selvästi, että uuden värin koodaus vie aina enemmän tilaa kuin
+vanhan, siispä pahimmassakaan mahdollisessa pakkaustapauksessa palettidatan
+koko ei ylitä kokonaan uusista väreistä koostuvan paletin datan kokoa.
+
+Huom! Kun määritellään, mitkä lohkot muuttuvat, on verrattava
+pakkaamatonta 24-bittistä kuvadataa, sillä täsmälleen sama 24-bittinen
+lohko kahdessa peräkkäisessä kuvassa saattaa kvantisoitua hieman eri
+paletille johtuen lohkon ulkopuolisten pikselien muutoksesta.
+
+Paletin muodostaminen
+---------------------
+
+Jos algoritmista johtuen pitää laskea, kuinka monta kappaletta
+kutakin (r, g, b) -yhdistelmää esiintyy kuvassa, tarvitaan muistia
+
+    256 * 256 * 256 * 4 = 64 megatavua,
+    
+kun kuvan leveyden ja korkeuden esittämiseen on kumpaankin varattu
+16 bittiä, siis 4 tavua yhteensä. (Pahin tapaus: kaikilla kuvan
+pikseleillä on sama rgb-väriarvo.)
+
+Tässä voisi ehkä käyttää hajautustaulua muistitilan säästämiseksi,
+mutta algoritmin myöhemmässä suoritusvaiheessa se ei ehkä olisi
+mahdollista ja muutenkin se hidastaisi algoritmia verrattuna
+kiinteään taulukkoon.
+ Myös voisi laittaa hajautustauluun arvoja, kun jonkin tietynvärisen
+pikselien määrä ylittää 255 niin, että hajautustauluun tallennetaan
+arvo b, jonka esittämiseen on varattu myös yksi tavu, ja silloin
+pikselien määrä tietyllä arvolla on
+
+    taulukon arvo a + 256 * b  | b on olemassa hajautustaulussa
+                                 tällä väriarvolla
+
+(Hajautustaulun avainten arvot olisivat sitten r + g<<8 + b<<16.)
+
+Octree-kvantisointia voisi käyttää.
+http://en.wikipedia.org/wiki/Octree
+
+Median cut vai octree?
+
+24-bittisten värien kuvaaminen 8-bittisiksi paletin perusteella
+---------------------------------------------------------------
+Kun pikselin väri on (r, g, b)
+ja paletin väriarvot pr[i], pg[i], pb[i], jossa i = 0..255
+(ja arvot r, g, b, pr, pg, pb väliltä 0..255), niin sopivin paletin
+väri väriarvolle (r, g, b) on se, jolla väriarvon etäisyys paletin
+väristä rgb-väriavaruudessa on pienin, toisin sanoen se i:n arvo,
+jolla
+
+    sqrt( (pr[i]-r)^2 + (pg[i]-g)^2 + (pb[i]-b)^2) )
+
+on pienin. Koska neliöjuurifunktio on aidosti kasvava eli
+sqrt(a[i]):t tulevat samaan suuruusjärjestykseen kuin a[i]:t, niin
+laskentaa voidaan optimoida jättämällä neliöjuuren ottaminen pois.
+Muutenkin voidaan vielä tehdä:
+
+    delta_r = pr[i] - r;
+    delta_g = pg[i] - g;
+    delta_b = pb[i] - b;
+    
+jolloin
+
+    etaisyys[i] = delta_r * delta_r + delta_g * delta_g +
+                  delta_b * delta_b;
+
+ja sitten vain etsitään pienin etaisyys[i] käymällä taulukko läpi:
+
+    pienin_etaisyys = 256 * 256 * 3;
+    pienin_i = 0;
+    for (i = 0; i < 256; i++) {
+        if (etaisyys[i] < pienin_etaisyys) {
+        	pienin_etaisyys = etaisyys[i];
+        	pienin_i = i;
+        }
+    }
+
+ja tulos on muuttujassa pienin_i.
+
+Vaan mikä on nopein tapa suorittaa edellämainittu kaikille kuvan
+pikseleille? Pitäisikö esilaskea parhaiten sopiva paletin väri
+jokaiselle mahdolliselle yhdistelmälle (r, g, b), joita siis on
+256^3 ~ 16,7 miljoonaa kpl?
+ Lasketaanpa. Esilaskennassa etäisyys siis mitataan 16,7*10^6
+väriarvolle. Kuitenkin kuvassa tarvitaan laskea etäisyys vain
+leveys * korkeus väriarvolle. Esimerkiksi resoluutioilla
+
+    640 * 480 ~ 3,0 * 10^5  <  1,7 * 10^7
+    720 * 576 ~ 4,1 * 10^5  <  1,7 * 10^7
+    1280 * 1024 ~1,2 * 10^6 <  1,7 * 10^7
+    
+Huomaa: videonpurkaja viestittää muuttuneet 8x8-ruudut myös GUI:lle,
+jotta sen ei tarvitsisi piirtää koko kuva-aluetta uusiksi joka kerta.
+Viestiminen tapahtuu bittikartalla, jossa jokaista 8x8-ruutua esittää
+yksi pikseli: väri 0 tarkoittaa "ei muutosta" ja väri 1 tarkoittaa
+muutosta.
+
+---
+
+256 värin paletin pystyisi ehkä pakkaamaan näin:
+
+           R        G        B
+indeksi abcdefgh ijklmnop qrstuvwx
+
+      0 00010010 00101010 00011000
+      1 00010111 00111010 11001001
+      2
+      3
+      4
+    ...
+      n
+      
+muodostetaan 24 bittiriviä a-x, joissa jokaisessa on 256 bittiä.
+a-h ovat punaisen komponentin bitit, i-p vihreän komponentin bitit ja
+q-x sinisen komponentin bitit. Bittirivit pakataan RLE-koodauksella.
+Idea perustuu siihen, että kun octreestä muodostetaan indeksoitu paletti,
+niin väriarvot tulevat palettiin sellaisessa järjestyksessä, että usein
+peräkkäisillä väreillä samoissa komponenteissa eniten merkitsevät bitit
+ovat samoja - onhan värit octreessä lajiteltu eniten merkitsevimmistä
+biteistä lähtien.
+
+Yksi bittirivi vie siis tilaa 256 / 8 = 32 tavua.
+Käytännössä ensin signaalitavu, jonka merkitsevin bitti kertoo, ovatko
+seuraavat bitit pakattuja vai ei, ja loput bitit kertovat arvolla 0-127
+eli 1-128, kuinka monta pakattua tai pakkaamatonta bittiä seuraa.
+Toisin sanoen riveissä pitää olla jaksoja, joiden pituus on vähintään
+yhdeksän, jotta pakkautuvuus olisi merkittävä. Tutki, onko näin.
+
+
+Eri asia on, onko tällaisen pakkauksen purkaminen liian työläs operaatio
+suhteessa säästettyyn tilaan.
+
+Esim. XviD pakkaa yhden puolentoista tunnin elokuvan yhdelle 650 Mt CD:lle
+resoluutiolla 640 x 480, jolloin pakkaussuhde on noin 1:190.
+640 x 480 x 3 = 921600. Paletin koko = 768.
+921600 / 768 = 1200, siis jos anip:llä haluaisi päästä samaan
+pakkaussuhteeseen, niin _pakkaamaton_ paletti veisi yhdestä framesta
+keskimäärin 190/1200 = 16 %, siis paletti-informaatio koko tiedostosta
+myös saman verran, 100 megatavua.
